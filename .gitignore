@@ -1,0 +1,25 @@
+# Standard files
+*.bak
+*.log
+
+# Lattice Diamond files
+.run_manager.ini
+.setting.ini
+.spread_sheet.ini
+.spreadsheet_view.ini
+.floorplanner.ini
+.build_status
+._Real_._Math_.vhd
+.vdbs/
+generate_*.tcl
+xxx_lse_*
+*_prim.v
+*_impl*
+*.dir/
+*.ccl
+*.html
+*.twr
+*.xml
+
+# Doxygen output
+fpga/targets/*/docs/html/

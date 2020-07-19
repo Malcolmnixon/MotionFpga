@@ -1,0 +1,114 @@
+rule:
+  global:
+    indentSize: 4
+    case: 'lower'
+
+  library_003:
+    disable: true   # Allow doxygen comment before LIBRARY
+  library_004:
+    case: 'upper'   # Upper-case LIBRARY keyword
+  library_005:
+    case: 'upper'   # Upper-case USE keyword
+  library_008:
+    indentSize: 0   # Align USE with LIBRARY
+  library_009:
+    indentSize: 0   # Align USE comment with LIBRARY
+    
+  entity_003:
+    disable: true   # Allow doxygen comment before ENTITY
+  entity_004:
+    case: 'upper'   # Upper-case ENTITY keyword
+  entity_006:
+    case: 'upper'   # Upper-case IS keyword
+  entity_010:
+    case: 'upper'   # Upper-case END keyword
+  entity_014:
+    case: 'upper'   # Upper-case ENTITY keyword
+  
+  generic_009:
+    case: 'upper'   # Upper-case GENERIC keyword
+  
+  architecture_003:
+    disable: true   # Allow doxygen comment before architecture
+  architecture_004:
+    case: 'upper'   # Upper-case ARCHITECTURE keyword
+  architecture_009:
+    case: 'upper'   # Upper-case END keyword
+  architecture_019:
+    case: 'upper'   # Upper-case OF keyword
+  architecture_020:
+    case: 'upper'   # Upper-case IS keyword
+  architecture_021:
+    case: 'upper'   # Upper-case BEGIN keyword
+  architecture_028:
+    case: 'upper'   # Upper-case ARCHITECTURE keyword
+      
+  constant_002:
+    case: 'upper'   # Upper-case CONSTANT keyword
+  
+  component_003:
+    disable: true   # Allow comment before component
+  component_004:
+    case: 'upper'   # Upper-case COMPONENT keyword
+  component_006:
+    case: 'upper'   # Upper-case IS keyword
+  component_010:
+    case: 'upper'   # Upper-case END keyword
+  component_014:
+    case: 'upper'   # Upper-case COMPONENT keyword
+  
+  instantiation_006:
+    case: 'upper'   # Upper-case PORT MAP keyword
+  instantiation_013:
+    case: 'upper'   # Upper-case GENERIC MAP keyword
+  instantiation_027:
+    case: 'upper'   # Upper-case ENTITY keyword
+  
+  signal_002:
+    case: 'upper'   # Upper-case SIGNAL keyword
+  
+  process_004:
+    case: 'upper'   # Upper-case BEGIN keyword
+  process_005:
+    case: 'upper'   # Upper-case PROCESS keyword
+  process_008:
+    case: 'upper'   # Upper-case END keyword
+  process_009:
+    case: 'upper'   # Upper-case PROCESS keyword
+  process_013:
+    case: 'upper'   # Upper-case IS keyword
+  process_029:
+    clock: 'edge'
+  process_036:
+    disable: false
+    prefixes: [ 'pr_' ]
+    
+  if_025:
+    case: 'upper'   # Upper-case IF keyword
+  if_026:
+    case: 'upper'   # Upper-case ELSIF keyword
+  if_027:
+    case: 'upper'   # Upper-case ELSE keyword
+  if_028:
+    case: 'upper'   # Upper-case END keyword
+  if_029:
+    case: 'upper'   # Upper-case THEN keyword
+  if_034:
+    case: 'upper'   # Upper-case IF keyword
+  
+  range_001:
+    case: 'upper'   # Upper-case DOWNTO keyword
+  range_002:
+    case: 'upper'   # Upper-case TO keyword
+  
+  variable_002:
+    case: 'upper'   # Upper-case VARIABLE keyword
+  variable_012:
+    disable: false
+    prefixes: [ 'v_' ]    
+
+  port_017:
+    case: 'upper'   # Upper-case PORT keyword
+  port_019:
+    case: 'upper'   # Upper-case PORT direction keywords (IN/OUT/INOUT)
+    
