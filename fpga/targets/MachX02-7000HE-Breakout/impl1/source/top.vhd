@@ -12,9 +12,9 @@ USE ieee.std_logic_1164.ALL;
 --! @brief MotionFpga top-level entity
 ENTITY top IS
     PORT (
-        rst_in    : IN    std_logic;
-        ready_out : OUT   std_logic;
-        blink_out : OUT   std_logic
+        rst_in    : IN    std_logic; --! FPGA reset input pin
+        ready_out : OUT   std_logic; --! FPGA ready status
+        blink_out : OUT   std_logic  --! FPGA health blink
     );
 END ENTITY top;
 

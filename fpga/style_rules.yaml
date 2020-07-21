@@ -42,7 +42,14 @@ rule:
     case: 'upper'   # Upper-case BEGIN keyword
   architecture_028:
     case: 'upper'   # Upper-case ARCHITECTURE keyword
-      
+
+  type_002:
+    case: 'upper'   # Upper-case TYPE keyword
+  type_010:
+    disable: true   # Allow doxygen comment before TYPE
+  type_013:
+    case: 'upper'   # Upper-case IS keyword
+  
   constant_002:
     case: 'upper'   # Upper-case CONSTANT keyword
   
@@ -95,6 +102,17 @@ rule:
     case: 'upper'   # Upper-case THEN keyword
   if_034:
     case: 'upper'   # Upper-case IF keyword
+  
+  case_014:
+    case: 'upper'   # Upper-case CASE keyword
+  case_015:
+    case: 'upper'   # Upper-case IS keyword
+  case_016:
+    case: 'upper'   # Upper-case WHEN keyword
+  case_017:
+    case: 'upper'   # Upper-case END keyword
+  case_018:
+    case: 'upper'   # Upper-case CASE keyword
   
   range_001:
     case: 'upper'   # Upper-case DOWNTO keyword

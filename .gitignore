@@ -21,5 +21,13 @@ xxx_lse_*
 *.twr
 *.xml
 
+# Active-HDL Simulations
+library.cfg
+*.asdb
+*.mgf
+*.lib
+fpga/targets/*/simulation/*
+!fpga/targets/*/simulation/*.spf
+
 # Doxygen output
 fpga/targets/*/docs/html/
