@@ -824,12 +824,11 @@ WARN_LOGFILE           =
 # Note: If this tag is empty the current directory is searched.
 
 INPUT                  = ./fpga/targets/MachX02-7000HE-Breakout/docs.vhd \
+                         ./README.md \
                          ./fpga/common/utility/source \
-                         ./fpga/common/utility/sim \
                          ./fpga/common/communications/source \
                          ./fpga/common/communications/sim \
-                         ./fpga/targets/MachX02-7000HE-Breakout/impl1/source \
-                         ./fpga/targets/MachX02-7000HE-Breakout/impl1/sim
+                         ./fpga/targets/MachX02-7000HE-Breakout/impl1/source
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding. Doxygen uses
@@ -2276,7 +2275,7 @@ EXTERNAL_GROUPS        = YES
 # be listed.
 # The default value is: YES.
 
-EXTERNAL_PAGES         = NO
+EXTERNAL_PAGES         = YES
 
 #---------------------------------------------------------------------------
 # Configuration options related to the dot tool
