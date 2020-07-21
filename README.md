@@ -24,3 +24,6 @@ The types of high-speed interfaces between a processor and the Motion FPGA inclu
 * SPI
 * Virtual External Memory (Memory read/write)
 * PCIe (Memory read/write)
+
+# Doxygen Documentation
+A light-weight version of the Doxygen output can be found on [CodeDocs.xyz](https://codedocs.xyz/Malcolmnixon/MotionFpga/).

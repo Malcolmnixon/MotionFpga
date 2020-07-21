@@ -127,8 +127,8 @@ BEGIN
         WAIT FOR c_clk_period;
         ASSERT (dat_wr_done = '1') REPORT "Expected dat_wr_done high for transfer done" SEVERITY warning;
     
-        -- Wait for 5 clocks
-        WAIT FOR c_clk_period * 5;
+        -- Wait for 10 clocks
+        WAIT FOR c_clk_period * 10;
         ASSERT (dat_wr_done = '0') REPORT "Expected dat_wr_done low after transfer done" SEVERITY warning;
         
         -- Verify test patterns

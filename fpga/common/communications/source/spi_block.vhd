@@ -11,6 +11,8 @@ USE ieee.std_logic_1164.ALL;
 
 --! @brief SPI Block module
 --!
+--! @image html spi_block_entity.png "SPI Block Entity"
+--!
 --! This SPI block provides a simple 32-bit wide SPI shift register for 
 --! reading/writing data. At the start of a transfer when the CS goes low,
 --! the module drives the 'dat_rd_strt_out' signal for one clock to request
@@ -19,11 +21,11 @@ USE ieee.std_logic_1164.ALL;
 --! data into 'dat_wr_reg_out' then drives the 'dat_wr_done_out' signal for
 --! one clock indicating new data has been written to the SPI block.
 --!
---! This module supports asynchronous reset through the mod_rst_in signal.
+--! @image html spi_block_transfer.png "SPI Block Transfer"
 ENTITY spi_block IS
     PORT (
         mod_clk_in      : IN    std_logic;                     --! Module Clock
-        mod_rst_in      : IN    std_logic;                     --! Module Reset
+        mod_rst_in      : IN    std_logic;                     --! Module Reset (async)
         spi_cs_in       : IN    std_logic;                     --! SPI Chip-select
         spi_sclk_in     : IN    std_logic;                     --! SPI Clock
         spi_mosi_in     : IN    std_logic;                     --! SPI MOSI
