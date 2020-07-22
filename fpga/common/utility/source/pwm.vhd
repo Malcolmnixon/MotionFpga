@@ -46,9 +46,6 @@ BEGIN
 
     --! @brief Process for PWM generation
     pr_pwm : PROCESS (clk_in, rst_in) IS
-    
-        VARIABLE v_count : integer RANGE 0 TO count_max;
-    
     BEGIN
     
         IF (rst_in = '1') THEN
