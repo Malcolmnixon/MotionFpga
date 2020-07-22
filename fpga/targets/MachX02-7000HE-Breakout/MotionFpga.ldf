@@ -9,11 +9,17 @@
         <Source name="../../common/utility/source/blink.vhd" type="VHDL" type_short="VHDL">
             <Options/>
         </Source>
+        <Source name="../../common/utility/source/pwm.vhd" type="VHDL" type_short="VHDL">
+            <Options/>
+        </Source>
         <Source name="../../common/communications/source/spi_block.vhd" type="VHDL" type_short="VHDL">
             <Options/>
         </Source>
         <Source name="impl1/source/top.vhd" type="VHDL" type_short="VHDL">
             <Options top_module="top"/>
+        </Source>
+        <Source name="../../common/utility/sim/pwm_tb.vhd" type="VHDL" type_short="VHDL" syn_sim="SimOnly">
+            <Options/>
         </Source>
         <Source name="../../common/communications/sim/spi_block_tb.vhd" type="VHDL" type_short="VHDL" syn_sim="SimOnly">
             <Options/>

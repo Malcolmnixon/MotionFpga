@@ -1,11 +1,13 @@
 <BaliSimProject version="1.3" path="." stage="0" language="-1" name="simulation" simType="Active-HDL">
+    <Source worklib="work" path="../../common/utility/source/pwm.vhd" type="VHDL" include="none"/>
     <Source worklib="work" path="../../common/utility/source/blink.vhd" type="VHDL" include="none"/>
     <Source worklib="work" path="impl1/IPexpress/pll.vhd" type="VHDL" include="none"/>
     <Source worklib="work" path="impl1/source/top.vhd" type="VHDL" include="none"/>
     <Source worklib="work" path="../../common/communications/source/spi_block.vhd" type="VHDL" include="none"/>
     <Source worklib="work" path="../../common/communications/sim/spi_block_tb.vhd" type="VHDL" include="none"/>
+    <Source worklib="work" path="../../common/utility/sim/pwm_tb.vhd" type="VHDL" include="none"/>
     <SimLib value="pmi_work ovi_machxo2"/>
     <GlbInc value=""/>
     <Macro value=""/>
-    <TopModule instance="" language="VHDL" name="spi_block_tb"/>
+    <TopModule instance="" language="VHDL" name="pwm"/>
 </BaliSimProject>

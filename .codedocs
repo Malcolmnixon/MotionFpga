@@ -826,6 +826,7 @@ WARN_LOGFILE           =
 INPUT                  = ./fpga/targets/MachX02-7000HE-Breakout/docs.vhd \
                          ./README.md \
                          ./fpga/common/utility/source \
+                         ./fpga/common/utility/sim \
                          ./fpga/common/communications/source \
                          ./fpga/common/communications/sim \
                          ./fpga/targets/MachX02-7000HE-Breakout/impl1/source

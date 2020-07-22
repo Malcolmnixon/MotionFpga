@@ -1,5 +1,7 @@
 file_list:
  - impl1/source/top.vhd
  - ../../common/utility/source/blink.vhd
+ - ../../common/utility/source/pwm.vhd
+ - ../../common/utility/sim/pwm_tb.vhd
  - ../../common/communications/source/spi_block.vhd
  - ../../common/communications/sim/spi_block_tb.vhd
