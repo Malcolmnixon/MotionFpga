@@ -827,6 +827,8 @@ INPUT                  = ./fpga/targets/MachX02-7000HE-Breakout/docs.vhd \
                          ./README.md \
                          ./fpga/common/utility/source \
                          ./fpga/common/utility/sim \
+                         ./fpga/common/devices/source \
+                         ./fpga/common/devices/sim \
                          ./fpga/common/communications/source \
                          ./fpga/common/communications/sim \
                          ./fpga/targets/MachX02-7000HE-Breakout/impl1/source
@@ -971,6 +973,7 @@ EXAMPLE_RECURSIVE      = NO
 # \image command).
 
 IMAGE_PATH             = ./fpga/common/utility/source \
+                         ./fpga/common/devices/source
                          ./fpga/common/communications/source
 
 # The INPUT_FILTER tag can be used to specify a program that doxygen should
