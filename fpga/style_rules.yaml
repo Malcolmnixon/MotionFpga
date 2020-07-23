@@ -70,7 +70,14 @@ rule:
     case: 'upper'   # Upper-case GENERIC MAP keyword
   instantiation_027:
     case: 'upper'   # Upper-case ENTITY keyword
-  
+
+  generate_004:
+    disable: true   # Allow comment before component
+  generate_009:  
+    case: 'upper'   # Upper-case END keyword
+  generate_010:  
+    case: 'upper'   # Upper-case GENERATE keyword
+
   signal_002:
     case: 'upper'   # Upper-case SIGNAL keyword
   
