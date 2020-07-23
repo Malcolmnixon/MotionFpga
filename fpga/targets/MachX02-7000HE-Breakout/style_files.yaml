@@ -6,4 +6,5 @@ file_list:
  - ../../common/devices/source/pwm_device.vhd
  - ../../common/devices/sim/pwm_device_tb.vhd
  - ../../common/communications/source/spi_block.vhd
+ - ../../common/communications/source/spi_pwm_device.vhd
  - ../../common/communications/sim/spi_block_tb.vhd
