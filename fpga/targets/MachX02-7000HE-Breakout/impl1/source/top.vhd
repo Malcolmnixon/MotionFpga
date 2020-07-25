@@ -12,20 +12,31 @@ USE ieee.std_logic_1164.ALL;
 --! @brief MotionFpga top-level entity
 ENTITY top IS
     PORT (
-        rst_in    : IN    std_logic; --! FPGA reset input pin
-        ready_out : OUT   std_logic; --! FPGA ready status
-        blink_out : OUT   std_logic  --! FPGA health blink
+        rst_in       : IN    std_logic;                   --! FPGA reset input line
+        ready_out    : OUT   std_logic;                   --! FPGA ready status output line
+        blink_out    : OUT   std_logic;                   --! FPGA health blink output line
+        spi_cs_in    : IN    std_logic;                   --! SPI chip-select input line
+        spi_sclk_in  : IN    std_logic;                   --! SPI clock input line
+        spi_mosi_in  : IN    std_logic;                   --! SPI MOSI input line
+        spi_miso_out : OUT   std_logic;                   --! SPI MISO output line
+        pwm_out      : OUT   std_logic_vector(3 DOWNTO 0) --! PWM outputs
     );
 END ENTITY top;
 
 --! Architecture rtl of top entity
 ARCHITECTURE rtl OF top IS
 
-    SIGNAL osc    : std_logic; --! Internal oscillator (11.08MHz)
-    SIGNAL lock   : std_logic; --! PLL Lock 
-    SIGNAL clk    : std_logic; --! Main clock (99.72MHz)
-    SIGNAL rst_ms : std_logic; --! Reset (possibly metastable)
-    SIGNAL rst    : std_logic; --! Reset
+    SIGNAL osc         : std_logic; --! Internal oscillator (11.08MHz)
+    SIGNAL lock        : std_logic; --! PLL Lock 
+    SIGNAL clk         : std_logic; --! Main clock (99.72MHz)
+    SIGNAL rst_ms      : std_logic; --! Reset (possibly metastable)
+    SIGNAL rst         : std_logic; --! Reset
+    SIGNAL spi_cs_ms   : std_logic; --! SPI chip-select input (metastable)
+    SIGNAL spi_sclk_ms : std_logic; --! SPI clock input (metastable)
+    SIGNAL spi_mosi_ms : std_logic; --! SPI MOSI input (metastable)
+    SIGNAL spi_cs_s    : std_logic; --! SPI chip-select input (stable)
+    SIGNAL spi_sclk_s  : std_logic; --! SPI clock input (stable)
+    SIGNAL spi_mosi_s  : std_logic; --! SPI MOSI input (stable)
 
     --! Component declaration for the MachX02 internal oscillator
     COMPONENT osch IS
@@ -79,6 +90,19 @@ BEGIN
             rst_in  => rst,
             led_out => blink_out
         );
+        
+    --! Instantiate the PWM device
+    i_spi_pwm_device : ENTITY work.spi_pwm_device(rtl)
+        PORT MAP (
+            mod_clk_in => clk,
+            mod_rst_in => rst,
+            pwm_adv_in => clk,
+            spi_cs_in => spi_cs_s,
+            spi_sclk_in => spi_sclk_s,
+            spi_mosi_in => spi_mosi_s,
+            spi_miso_out => spi_miso_out,
+            pwm_out => pwm_out
+        );
 
     --! @brief Reset process
     --!
@@ -97,6 +121,24 @@ BEGIN
         END IF;
          
     END PROCESS pr_reset;
+
+    --! @brief SPI input double-flop resynchronizer
+    --!
+    --! This process double-flops the SPI inputs to resolve metastability and
+    --! ensure the signals are stable for SPI processing
+    pr_spi_input : PROCESS (clk) IS
+    BEGIN
+    
+        IF (rising_edge(clk)) THEN
+            spi_cs_ms   <= spi_cs_in;
+            spi_sclk_ms <= spi_sclk_in;
+            spi_mosi_ms <= spi_mosi_in;
+            spi_cs_s    <= spi_cs_ms;
+            spi_sclk_s  <= spi_sclk_ms;
+            spi_mosi_s  <= spi_mosi_ms;
+        END IF;
+        
+    END PROCESS pr_spi_input;
 
     ready_out <= NOT rst; -- Ready when not in reset
 
