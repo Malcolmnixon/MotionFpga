@@ -16,7 +16,9 @@ USE ieee.numeric_std.ALL;
 --!
 --! @image html pwm_device_entity.png "PWM Device Entity"
 --!
---! This entity manages four PWM devices.
+--! This entity manages four PWM devices. The write register contains the 
+--! four 8-bit PWM duty cycles. The read register contains the current four
+--! 8-bit PWM duty cycles.
 ENTITY pwm_device IS
     PORT (
         mod_clk_in     : IN    std_logic;                     --! Module Clock
