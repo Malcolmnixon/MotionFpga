@@ -1,6 +1,6 @@
 -------------------------------------------------------------------------------
 --! @file
---! @brief SPI Block testbench module
+--! @brief SPI Version Block testbench module
 -------------------------------------------------------------------------------
 
 --! Using IEEE library
@@ -9,15 +9,18 @@ LIBRARY ieee;
 --! Using IEEE standard logic components
 USE ieee.std_logic_1164.ALL;
 
---! @brief SPI Block testbench module
-ENTITY spi_block_tb IS
-END ENTITY spi_block_tb;
+--! @brief SPI Version Block testbench module
+ENTITY spi_version_block_tb IS
+END ENTITY spi_version_block_tb;
 
---! Architecture tb of spi_block_tb entity
-ARCHITECTURE tb OF spi_block_tb IS
+--! Architecture tb of spi_version_block_tb entity
+ARCHITECTURE tb OF spi_version_block_tb IS
 
     --! Clock period
     CONSTANT c_clk_period : time := 100 ns;
+    
+    --! Module Version information
+    CONSTANT c_ver_info : std_logic_vector(31 DOWNTO 0) := X"12345678";
     
     -- Signals to unit under test
     SIGNAL mod_clk     : std_logic;                     --! Module clock input to uut
@@ -26,6 +29,7 @@ ARCHITECTURE tb OF spi_block_tb IS
     SIGNAL spi_sclk    : std_logic;                     --! SPI clock input to uut
     SIGNAL spi_mosi    : std_logic;                     --! SPI MOSI input to uut
     SIGNAL spi_miso    : std_logic;                     --! SPI MISO output from uut
+    SIGNAL spi_ver_en  : std_logic;                     --! SPI Version Enable input to uut
     SIGNAL dat_rd_reg  : std_logic_vector(31 DOWNTO 0); --! Data read register input to uut
     SIGNAL dat_rd_strt : std_logic;                     --! Data read start output from uut
     SIGNAL dat_wr_reg  : std_logic_vector(31 DOWNTO 0); --! Data write register output from uut
@@ -37,8 +41,11 @@ ARCHITECTURE tb OF spi_block_tb IS
 
 BEGIN
 
-    --! Instantiate spi_block as unit under test
-    i_uut : ENTITY work.spi_block(rtl)
+    --! Instantiate spi_version_block as unit under test
+    i_uut : ENTITY work.spi_version_block(rtl)
+        GENERIC MAP (
+            ver_info => c_ver_info
+        )
         PORT MAP (
             mod_clk_in      => mod_clk,
             mod_rst_in      => mod_rst,
@@ -46,6 +53,7 @@ BEGIN
             spi_sclk_in     => spi_sclk,
             spi_mosi_in     => spi_mosi,
             spi_miso_out    => spi_miso,
+            spi_ver_en_in   => spi_ver_en,
             dat_rd_reg_in   => dat_rd_reg,
             dat_rd_strt_out => dat_rd_strt,
             dat_wr_reg_out  => dat_wr_reg,
@@ -71,9 +79,10 @@ BEGIN
     BEGIN
     
         -- Set SPI bus idle
-        spi_cs   <= '1'; -- CS: high-idle
-        spi_sclk <= '0'; -- SCLK: low-idle
-        spi_mosi <= '0'; -- MOSI: idle
+        spi_ver_en <= '1'; -- Enable Version Read
+        spi_cs     <= '1'; -- CS: high-idle
+        spi_sclk   <= '0'; -- SCLK: low-idle
+        spi_mosi   <= '0'; -- MOSI: idle
         
         -- Reset for 5 clocks
         mod_rst <= '1';
@@ -89,10 +98,10 @@ BEGIN
         ASSERT (dat_rd_strt = '0') REPORT "Expected dat_rd_strt low while idle" SEVERITY warning;
         ASSERT (dat_wr_done = '0') REPORT "Expected dat_wr_done low while idle" SEVERITY warning;
         
-        -- Start SPI transfer
+        -- Start SPI transfer with version read
         spi_cs <= '0';
         WAIT FOR c_clk_period;
-        ASSERT (dat_rd_strt = '1') REPORT "Expected dat_rd_strt high for transfer start" SEVERITY warning;
+        ASSERT (dat_rd_strt = '0') REPORT "Expected dat_rd_strt low for version transfer start" SEVERITY warning;
         
         -- Provide test pattern
         dat_rd_reg <= X"AA550011";
@@ -100,7 +109,7 @@ BEGIN
         
         -- Wait for 5 clocks (CS-to-Start)
         WAIT FOR c_clk_period * 5;
-        ASSERT (dat_rd_strt = '0') REPORT "Expected dat_rd_strt low after transfer start" SEVERITY warning;
+        ASSERT (dat_rd_strt = '0') REPORT "Expected dat_rd_strt low after version transfer start" SEVERITY warning;
         
         -- Clock SPI bus
         FOR i IN 0 TO 31 LOOP
@@ -125,11 +134,57 @@ BEGIN
         -- End SPI transfer
         spi_cs <= '1';
         WAIT FOR c_clk_period;
-        ASSERT (dat_wr_done = '1') REPORT "Expected dat_wr_done high for transfer done" SEVERITY warning;
+        ASSERT (dat_wr_done = '0') REPORT "Expected dat_wr_done low for version transfer done" SEVERITY warning;
     
         -- Wait for 10 clocks
         WAIT FOR c_clk_period * 10;
-        ASSERT (dat_wr_done = '0') REPORT "Expected dat_wr_done low after transfer done" SEVERITY warning;
+        ASSERT (dat_wr_done = '0') REPORT "Expected dat_wr_done low after version transfer done" SEVERITY warning;
+        
+        -- Verify test patterns
+        ASSERT (miso_rd = c_ver_info) REPORT "Expected miso_rd matches c_ver_info" SEVERITY warning;
+    
+        -- Start SPI transfer to access device
+        spi_ver_en <= '0';
+        spi_cs     <= '0';
+        WAIT FOR c_clk_period;
+        ASSERT (dat_rd_strt = '1') REPORT "Expected dat_rd_strt high for data transfer start" SEVERITY warning;
+        
+        -- Provide test pattern
+        dat_rd_reg <= X"AA550011";
+        mosi_wr    <= X"DEADBEEF";
+        
+        -- Wait for 5 clocks (CS-to-Start)
+        WAIT FOR c_clk_period * 5;
+        ASSERT (dat_rd_strt = '0') REPORT "Expected dat_rd_strt low after data transfer start" SEVERITY warning;
+        
+        -- Clock SPI bus
+        FOR i IN 0 TO 31 LOOP
+            -- Drive MOSI
+            spi_mosi <= mosi_wr(i);
+            
+            -- Wait for first-edge delay
+            WAIT FOR c_clk_period * 2;
+            
+            -- Read MISO and transition to second-edge
+            miso_rd(i) <= spi_miso;
+            spi_sclk   <= '1';
+
+            -- Wait for second-edge delay
+            WAIT FOR c_clk_period * 2;
+            spi_sclk <= '0';
+        END LOOP;
+
+        -- Wait for 5 clocks (End-to-CS)
+        WAIT FOR c_clk_period * 5;
+        
+        -- End SPI transfer
+        spi_cs <= '1';
+        WAIT FOR c_clk_period;
+        ASSERT (dat_wr_done = '1') REPORT "Expected dat_wr_done high for data transfer done" SEVERITY warning;
+    
+        -- Wait for 10 clocks
+        WAIT FOR c_clk_period * 10;
+        ASSERT (dat_wr_done = '0') REPORT "Expected dat_wr_done low after data transfer done" SEVERITY warning;
         
         -- Verify test patterns
         ASSERT (dat_wr_reg = mosi_wr) REPORT "Expected dat_wr_reg matches mosi_wr" SEVERITY warning;

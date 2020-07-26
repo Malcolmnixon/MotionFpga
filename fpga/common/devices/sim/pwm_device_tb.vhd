@@ -20,12 +20,12 @@ END ENTITY pwm_device_tb;
 ARCHITECTURE tb OF pwm_device_tb IS
 
     --! Test bench clock period
-    CONSTANT c_clk_period : time := 10ns;
+    CONSTANT c_clk_period : time := 10 ns;
     
     -- Signals to unit under test
     SIGNAL clk         : std_logic;                     --! Clock input to pwm device
     SIGNAL rst         : std_logic;                     --! Reset input to pwm device
-    SIGNAL adv         : std_logic;                     --! PWM advance input to pwm device
+    SIGNAL pwm_adv     : std_logic;                     --! PWM advance input to pwm device
     SIGNAL dat_wr_done : std_logic;                     --! Data write done input to pwm device
     SIGNAL dat_wr_reg  : std_logic_vector(31 DOWNTO 0); --! Data write register input to pwm device
     SIGNAL dat_rd_strt : std_logic;                     --! Data read start input to pwm device
@@ -37,9 +37,9 @@ BEGIN
     --! Instantiate PWM device as unit under test
     i_uut : ENTITY work.pwm_device(rtl)
         PORT MAP (
-            clk_in         => clk,
-            rst_in         => rst,
-            adv_in         => adv,
+            mod_clk_in     => clk,
+            mod_rst_in     => rst,
+            pwm_adv_in     => pwm_adv,
             dat_wr_done_in => dat_wr_done,
             dat_wr_reg_in  => dat_wr_reg,
             dat_rd_strt_in => dat_rd_strt,
@@ -53,12 +53,12 @@ BEGIN
     pr_clock : PROCESS IS
     BEGIN
     
-        clk <= '0';
-        adv <= '0';
+        clk     <= '0';
+        pwm_adv <= '0';
         WAIT FOR c_clk_period / 2;
 
-        clk <= '1';
-        adv <= '1';
+        clk     <= '1';
+        pwm_adv <= '1';
         WAIT FOR c_clk_period / 2;
         
     END PROCESS pr_clock;

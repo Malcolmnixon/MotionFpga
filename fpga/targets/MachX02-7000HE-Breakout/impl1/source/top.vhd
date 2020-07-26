@@ -12,32 +12,37 @@ USE ieee.std_logic_1164.ALL;
 --! @brief MotionFpga top-level entity
 ENTITY top IS
     PORT (
-        rst_in       : IN    std_logic;                   --! FPGA reset input line
-        ready_out    : OUT   std_logic;                   --! FPGA ready status output line
-        blink_out    : OUT   std_logic;                   --! FPGA health blink output line
-        spi_cs_in    : IN    std_logic;                   --! SPI chip-select input line
-        spi_sclk_in  : IN    std_logic;                   --! SPI clock input line
-        spi_mosi_in  : IN    std_logic;                   --! SPI MOSI input line
-        spi_miso_out : OUT   std_logic;                   --! SPI MISO output line
-        pwm_out      : OUT   std_logic_vector(3 DOWNTO 0) --! PWM outputs
+        rst_in        : IN    std_logic;                   --! FPGA reset input line
+        ready_out     : OUT   std_logic;                   --! FPGA ready status output line
+        spi_cs_in     : IN    std_logic;                   --! SPI chip-select input line
+        spi_sclk_in   : IN    std_logic;                   --! SPI clock input line
+        spi_mosi_in   : IN    std_logic;                   --! SPI MOSI input line
+        spi_miso_out  : OUT   std_logic;                   --! SPI MISO output line
+        spi_ver_en_in : IN    std_logic;                   --! SPI Version Enable input line
+        pwm_out       : OUT   std_logic_vector(3 DOWNTO 0) --! PWM outputs
     );
 END ENTITY top;
 
 --! Architecture rtl of top entity
 ARCHITECTURE rtl OF top IS
 
-    SIGNAL osc         : std_logic; --! Internal oscillator (11.08MHz)
-    SIGNAL lock        : std_logic; --! PLL Lock 
-    SIGNAL clk         : std_logic; --! Main clock (99.72MHz)
-    SIGNAL rst_ms      : std_logic; --! Reset (possibly metastable)
-    SIGNAL rst         : std_logic; --! Reset
-    SIGNAL spi_cs_ms   : std_logic; --! SPI chip-select input (metastable)
-    SIGNAL spi_sclk_ms : std_logic; --! SPI clock input (metastable)
-    SIGNAL spi_mosi_ms : std_logic; --! SPI MOSI input (metastable)
-    SIGNAL spi_cs_s    : std_logic; --! SPI chip-select input (stable)
-    SIGNAL spi_sclk_s  : std_logic; --! SPI clock input (stable)
-    SIGNAL spi_mosi_s  : std_logic; --! SPI MOSI input (stable)
-    SIGNAL pwm_adv     : std_logic; --! PWM advance signal
+    --! Version information for this FPGA
+    CONSTANT ver_info : std_logic_vector(31 DOWNTO 0) := X"00000000";
+
+    SIGNAL osc           : std_logic; --! Internal oscillator (11.08MHz)
+    SIGNAL lock          : std_logic; --! PLL Lock 
+    SIGNAL clk           : std_logic; --! Main clock (99.72MHz)
+    SIGNAL rst_ms        : std_logic; --! Reset (possibly metastable)
+    SIGNAL rst           : std_logic; --! Reset
+    SIGNAL spi_cs_ms     : std_logic; --! SPI chip-select input (metastable)
+    SIGNAL spi_sclk_ms   : std_logic; --! SPI clock input (metastable)
+    SIGNAL spi_mosi_ms   : std_logic; --! SPI MOSI input (metastable)
+    SIGNAL spi_ver_en_ms : std_logic; --! SPI Version Enable (metastable)
+    SIGNAL spi_cs_s      : std_logic; --! SPI chip-select input (stable)
+    SIGNAL spi_sclk_s    : std_logic; --! SPI clock input (stable)
+    SIGNAL spi_mosi_s    : std_logic; --! SPI MOSI input (stable)
+    SIGNAL spi_ver_en_s  : std_logic; --! SPI Version Enable input (stable)
+    SIGNAL pwm_adv       : std_logic; --! PWM advance signal
 
     --! Component declaration for the MachX02 internal oscillator
     COMPONENT osch IS
@@ -81,17 +86,6 @@ BEGIN
             lock  => lock
         );
 
-    --! Instantiate the blink at 10Hz
-    i_blink : ENTITY work.blink(rtl)
-        GENERIC MAP (
-            max_count => 5_000_000 - 1
-        )
-        PORT MAP (
-            clk_in  => clk,
-            rst_in  => rst,
-            led_out => blink_out
-        );
-    
     --! Instantiate the clock divider for PWM advance    
     i_pwm_clk : ENTITY work.clk_div_n(rtl)
         GENERIC MAP (
@@ -106,15 +100,19 @@ BEGIN
         
     --! Instantiate the PWM device
     i_spi_pwm_device : ENTITY work.spi_pwm_device(rtl)
+        GENERIC MAP (
+            ver_info => ver_info
+        )
         PORT MAP (
-            mod_clk_in   => clk,
-            mod_rst_in   => rst,
-            pwm_adv_in   => pwm_adv,
-            spi_cs_in    => spi_cs_s,
-            spi_sclk_in  => spi_sclk_s,
-            spi_mosi_in  => spi_mosi_s,
-            spi_miso_out => spi_miso_out,
-            pwm_out      => pwm_out
+            mod_clk_in    => clk,
+            mod_rst_in    => rst,
+            pwm_adv_in    => pwm_adv,
+            spi_cs_in     => spi_cs_s,
+            spi_sclk_in   => spi_sclk_s,
+            spi_mosi_in   => spi_mosi_s,
+            spi_miso_out  => spi_miso_out,
+            spi_ver_en_in => spi_ver_en_s,
+            pwm_out       => pwm_out
         );
 
     --! @brief Reset process
@@ -143,12 +141,14 @@ BEGIN
     BEGIN
     
         IF (rising_edge(clk)) THEN
-            spi_cs_ms   <= spi_cs_in;
-            spi_sclk_ms <= spi_sclk_in;
-            spi_mosi_ms <= spi_mosi_in;
-            spi_cs_s    <= spi_cs_ms;
-            spi_sclk_s  <= spi_sclk_ms;
-            spi_mosi_s  <= spi_mosi_ms;
+            spi_cs_ms     <= spi_cs_in;
+            spi_sclk_ms   <= spi_sclk_in;
+            spi_mosi_ms   <= spi_mosi_in;
+            spi_ver_en_ms <= spi_ver_en_in;
+            spi_cs_s      <= spi_cs_ms;
+            spi_sclk_s    <= spi_sclk_ms;
+            spi_mosi_s    <= spi_mosi_ms;
+            spi_ver_en_s  <= spi_ver_en_ms;
         END IF;
         
     END PROCESS pr_spi_input;
