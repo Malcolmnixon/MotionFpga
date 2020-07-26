@@ -9,4 +9,6 @@ file_list:
  - ../../common/devices/sim/pwm_device_tb.vhd
  - ../../common/communications/source/spi_block.vhd
  - ../../common/communications/source/spi_pwm_device.vhd
+ - ../../common/communications/source/spi_version_block.vhd
  - ../../common/communications/sim/spi_block_tb.vhd
+ - ../../common/communications/sim/spi_version_block_tb.vhd
