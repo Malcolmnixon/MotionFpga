@@ -11,6 +11,9 @@
         <Source name="../../common/utility/source/blink.vhd" type="VHDL" type_short="VHDL">
             <Options/>
         </Source>
+        <Source name="../../common/utility/source/clk_div_n.vhd" type="VHDL" type_short="VHDL">
+            <Options/>
+        </Source>
         <Source name="../../common/utility/source/pwm.vhd" type="VHDL" type_short="VHDL">
             <Options/>
         </Source>
@@ -25,6 +28,9 @@
         </Source>
         <Source name="impl1/source/top.vhd" type="VHDL" type_short="VHDL">
             <Options top_module="top"/>
+        </Source>
+        <Source name="../../common/utility/sim/clk_div_n_tb.vhd" type="VHDL" type_short="VHDL">
+            <Options/>
         </Source>
         <Source name="../../common/utility/sim/pwm_tb.vhd" type="VHDL" type_short="VHDL" syn_sim="SimOnly">
             <Options/>
