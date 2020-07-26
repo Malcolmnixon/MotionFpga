@@ -56,9 +56,9 @@ BEGIN
     --! Instantiate PWM device
     i_pwm_device : ENTITY work.pwm_device(rtl)
         PORT MAP (
-            clk_in         => mod_clk_in,
-            rst_in         => mod_rst_in,
-            adv_in         => pwm_adv_in,
+            mod_clk_in     => mod_clk_in,
+            mod_rst_in     => mod_rst_in,
+            pwm_adv_in     => pwm_adv_in,
             dat_wr_done_in => dat_wr_done,
             dat_wr_reg_in  => dat_wr_reg,
             dat_rd_strt_in => dat_rd_strt,
