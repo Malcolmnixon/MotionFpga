@@ -14,11 +14,13 @@ USE ieee.numeric_std.ALL;
 
 --! @brief Clock divider entity
 --!
+--! @image html clk_div_n_entity.png "Clock Divider Entity"
+--!
 --! This clock divider takes an input clock and divides it by an integer
 --! value.
 ENTITY clk_div_n IS
     GENERIC (
-        divide : integer RANGE 1 TO integer'high := 4
+        divide : integer RANGE 1 TO integer'high := 4 --! Divider amount
     );
     PORT (
         mod_clk_in : IN    std_logic; --! Module clock

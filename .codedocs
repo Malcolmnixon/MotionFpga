@@ -973,7 +973,7 @@ EXAMPLE_RECURSIVE      = NO
 # \image command).
 
 IMAGE_PATH             = ./fpga/common/utility/source \
-                         ./fpga/common/devices/source
+                         ./fpga/common/devices/source \
                          ./fpga/common/communications/source
 
 # The INPUT_FILTER tag can be used to specify a program that doxygen should

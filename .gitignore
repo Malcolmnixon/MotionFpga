@@ -30,4 +30,4 @@ fpga/targets/*/simulation/*
 !fpga/targets/*/simulation/*.spf
 
 # Doxygen output
-fpga/targets/*/docs/html/
+docs/html/
