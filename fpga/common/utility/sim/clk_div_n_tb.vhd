@@ -20,7 +20,7 @@ END ENTITY clk_div_n_tb;
 ARCHITECTURE tb OF clk_div_n_tb IS
 
     --! Test bench clock period
-    CONSTANT c_clk_period : time := 10ns;
+    CONSTANT c_clk_period : time := 10 ns;
     
     -- Signals to unit under test
     SIGNAL clk     : std_logic; --! Clock input to unit under test
