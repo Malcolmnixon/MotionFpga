@@ -37,6 +37,7 @@ ARCHITECTURE rtl OF top IS
     SIGNAL spi_cs_s    : std_logic; --! SPI chip-select input (stable)
     SIGNAL spi_sclk_s  : std_logic; --! SPI clock input (stable)
     SIGNAL spi_mosi_s  : std_logic; --! SPI MOSI input (stable)
+    SIGNAL pwm_adv     : std_logic; --! PWM advance signal
 
     --! Component declaration for the MachX02 internal oscillator
     COMPONENT osch IS
@@ -90,18 +91,30 @@ BEGIN
             rst_in  => rst,
             led_out => blink_out
         );
+    
+    --! Instantiate the clock divider for PWM advance    
+    i_pwm_clk : ENTITY work.clk_div_n(rtl)
+        GENERIC MAP (
+            divide => 4
+        )
+        PORT MAP (
+            mod_clk_in => clk,
+            mod_rst_in => rst,
+            cnt_en_in  => '1',
+            cnt_out    => pwm_adv
+        );
         
     --! Instantiate the PWM device
     i_spi_pwm_device : ENTITY work.spi_pwm_device(rtl)
         PORT MAP (
-            mod_clk_in => clk,
-            mod_rst_in => rst,
-            pwm_adv_in => clk,
-            spi_cs_in => spi_cs_s,
-            spi_sclk_in => spi_sclk_s,
-            spi_mosi_in => spi_mosi_s,
+            mod_clk_in   => clk,
+            mod_rst_in   => rst,
+            pwm_adv_in   => pwm_adv,
+            spi_cs_in    => spi_cs_s,
+            spi_sclk_in  => spi_sclk_s,
+            spi_mosi_in  => spi_mosi_s,
             spi_miso_out => spi_miso_out,
-            pwm_out => pwm_out
+            pwm_out      => pwm_out
         );
 
     --! @brief Reset process
