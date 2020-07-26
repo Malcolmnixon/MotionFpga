@@ -14,7 +14,11 @@ USE ieee.numeric_std.ALL;
 
 --! @brief SPI PWM device entity
 --!
---! This entity exposes a PWM device over SPI.
+--! @image html spi_pwm_device_entity.png "SPI PWM Device Entity"
+--!
+--! This entity exposes a PWM device over SPI. The SPI data clocked in is
+--! four new 8-bit PWM duty-cycles, and the SPI data clocked out is the 
+--! current four 8-bit PWM duty-cycles.
 ENTITY spi_pwm_device IS
     PORT (
         mod_clk_in   : IN    std_logic;                   --! Module Clock
