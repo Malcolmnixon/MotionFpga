@@ -44,7 +44,7 @@ BEGIN
         
         IF (mod_rst_in = '1') THEN
             count   <= 0;
-			cnt_out <= '0';
+            cnt_out <= '0';
         ELSIF (rising_edge(mod_clk_in) AND cnt_en_in = '1') THEN
             IF (count = divide - 1) THEN
                 count   <= 0;
