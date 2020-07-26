@@ -37,11 +37,11 @@ BEGIN
             count_max => 2
         )
         PORT MAP (
-            clk_in  => clk,
-            rst_in  => rst,
-            adv_in  => adv,
-            duty_in => duty,
-            pwm_out => pwm
+            mod_clk_in  => clk,
+            mod_rst_in  => rst,
+            pwm_adv_in  => adv,
+            pwm_duty_in => duty,
+            pwm_out     => pwm
         );
 
     --! @brief Clock generator process

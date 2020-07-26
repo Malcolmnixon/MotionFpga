@@ -48,11 +48,11 @@ BEGIN
                 count_max => 254
             )
             PORT MAP (
-                clk_in => clk_in,
-                rst_in => rst_in,
-                adv_in => adv_in,
-                duty_in => duty(i),
-                pwm_out => pwm_out(i)
+                mod_clk_in  => clk_in,
+                mod_rst_in  => rst_in,
+                pwm_adv_in  => adv_in,
+                pwm_duty_in => duty(i),
+                pwm_out     => pwm_out(i)
             );
 
     END GENERATE g_pwm;
