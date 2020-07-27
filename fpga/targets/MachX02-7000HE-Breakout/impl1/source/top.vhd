@@ -106,12 +106,12 @@ BEGIN
         PORT MAP (
             mod_clk_in    => clk,
             mod_rst_in    => rst,
-            pwm_adv_in    => pwm_adv,
             spi_cs_in     => spi_cs_s,
             spi_sclk_in   => spi_sclk_s,
             spi_mosi_in   => spi_mosi_s,
             spi_miso_out  => spi_miso_out,
             spi_ver_en_in => spi_ver_en_s,
+            pwm_adv_in    => pwm_adv,
             pwm_out       => pwm_out
         );
 
