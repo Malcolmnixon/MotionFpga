@@ -26,12 +26,12 @@ ENTITY spi_pwm_device IS
     PORT (
         mod_clk_in    : IN    std_logic;                   --! Module Clock
         mod_rst_in    : IN    std_logic;                   --! Module Reset (async)
-        pwm_adv_in    : IN    std_logic;                   --! PWM Advance flag
         spi_cs_in     : IN    std_logic;                   --! SPI Chip-select
         spi_sclk_in   : IN    std_logic;                   --! SPI Clock
         spi_mosi_in   : IN    std_logic;                   --! SPI MOSI
         spi_miso_out  : OUT   std_logic;                   --! SPI MISO
         spi_ver_en_in : IN    std_logic;                   --! SPI Version Enable
+        pwm_adv_in    : IN    std_logic;                   --! PWM Advance flag
         pwm_out       : OUT   std_logic_vector(3 DOWNTO 0) --! PWM outputs
     );
 END ENTITY spi_pwm_device;
@@ -70,11 +70,11 @@ BEGIN
         PORT MAP (
             mod_clk_in     => mod_clk_in,
             mod_rst_in     => mod_rst_in,
-            pwm_adv_in     => pwm_adv_in,
             dat_wr_done_in => dat_wr_done,
             dat_wr_reg_in  => dat_wr_reg,
             dat_rd_strt_in => dat_rd_strt,
             dat_rd_reg_out => dat_rd_reg,
+            pwm_adv_in     => pwm_adv_in,
             pwm_out        => pwm_out
         );
     
