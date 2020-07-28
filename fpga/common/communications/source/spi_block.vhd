@@ -88,7 +88,7 @@ BEGIN
                         dat_wr_reg_out <= shift;                   -- Save write-register
                         state          <= st_xfr_done;
                     ELSIF (spi_sclk_in = '1') THEN
-                        shift <= spi_mosi_in & shift(31 DOWNTO 1); -- Save bit
+                        shift <= shift(30 DOWNTO 0) & spi_mosi_in; -- Save bit
                         state <= st_clk_2nd;
                     ELSE
                         state <= st_clk_1st;
@@ -115,8 +115,8 @@ BEGIN
     
     END PROCESS pr_shift;
 
-    -- Always drive LSB of shift register to MISO
-    spi_miso_out <= shift(0);
+    -- Always drive MSB of shift register to MISO
+    spi_miso_out <= shift(31);
     
     -- Trigger the read-start when in the transfer-start state
     dat_rd_strt_out <= '1' WHEN state = st_xfr_strt ELSE
