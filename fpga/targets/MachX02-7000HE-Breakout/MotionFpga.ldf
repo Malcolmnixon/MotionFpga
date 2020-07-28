@@ -17,6 +17,9 @@
         <Source name="../../common/utility/source/pwm.vhd" type="VHDL" type_short="VHDL">
             <Options/>
         </Source>
+        <Source name="../../common/utility/source/sdm.vhd" type="VHDL" type_short="VHDL">
+            <Options/>
+        </Source>
         <Source name="../../common/devices/source/pwm_device.vhd" type="VHDL" type_short="VHDL">
             <Options/>
         </Source>
@@ -45,6 +48,9 @@
             <Options/>
         </Source>
         <Source name="../../common/communications/sim/spi_version_block_tb.vhd" type="VHDL" type_short="VHDL" syn_sim="SimOnly">
+            <Options/>
+        </Source>
+        <Source name="../../common/utility/sim/sdm_tb.vhd" type="VHDL" type_short="VHDL" syn_sim="SimOnly">
             <Options/>
         </Source>
         <Source name="impl1/impl1.xcf" type="Programming Project File" type_short="Programming">

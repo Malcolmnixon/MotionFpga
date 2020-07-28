@@ -23,11 +23,11 @@ ENTITY pwm_device IS
     PORT (
         mod_clk_in     : IN    std_logic;                     --! Module Clock
         mod_rst_in     : IN    std_logic;                     --! Module Reset (async)
-        pwm_adv_in     : IN    std_logic;                     --! PWM Advance flag
         dat_wr_done_in : IN    std_logic;                     --! Device Write Done flag
         dat_wr_reg_in  : IN    std_logic_vector(31 DOWNTO 0); --! Device Write Register value
         dat_rd_strt_in : IN    std_logic;                     --! Device Read Start flag
         dat_rd_reg_out : OUT   std_logic_vector(31 DOWNTO 0); --! Device Read Register value
+        pwm_adv_in     : IN    std_logic;                     --! PWM Advance flag
         pwm_out        : OUT   std_logic_vector(3 DOWNTO 0)   --! PWM outputs
     );
 END ENTITY pwm_device;
