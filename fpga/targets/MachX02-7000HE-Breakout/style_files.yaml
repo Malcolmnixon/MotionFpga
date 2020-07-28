@@ -8,9 +8,11 @@ file_list:
  - ../../common/utility/sim/pwm_tb.vhd
  - ../../common/utility/sim/sdm_tb.vhd
  - ../../common/devices/source/pwm_device.vhd
+ - ../../common/devices/source/sdm_device.vhd
  - ../../common/devices/sim/pwm_device_tb.vhd
  - ../../common/communications/source/spi_block.vhd
  - ../../common/communications/source/spi_pwm_device.vhd
+ - ../../common/communications/source/spi_sdm_device.vhd
  - ../../common/communications/source/spi_version_block.vhd
  - ../../common/communications/sim/spi_block_tb.vhd
  - ../../common/communications/sim/spi_version_block_tb.vhd

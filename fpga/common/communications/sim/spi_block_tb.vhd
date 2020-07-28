@@ -103,7 +103,7 @@ BEGIN
         ASSERT (dat_rd_strt = '0') REPORT "Expected dat_rd_strt low after transfer start" SEVERITY warning;
         
         -- Clock SPI bus
-        FOR i IN 0 TO 31 LOOP
+        FOR i IN 31 DOWNTO 0 LOOP
             -- Drive MOSI
             spi_mosi <= mosi_wr(i);
             

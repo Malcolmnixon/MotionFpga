@@ -13,13 +13,12 @@ USE ieee.std_logic_1164.ALL;
 ENTITY top IS
     PORT (
         rst_in        : IN    std_logic;                   --! FPGA reset input line
-        ready_out     : OUT   std_logic;                   --! FPGA ready status output line
         spi_cs_in     : IN    std_logic;                   --! SPI chip-select input line
         spi_sclk_in   : IN    std_logic;                   --! SPI clock input line
         spi_mosi_in   : IN    std_logic;                   --! SPI MOSI input line
         spi_miso_out  : OUT   std_logic;                   --! SPI MISO output line
         spi_ver_en_in : IN    std_logic;                   --! SPI Version Enable input line
-        pwm_out       : OUT   std_logic_vector(3 DOWNTO 0) --! PWM outputs
+        led_out       : OUT   std_logic_vector(7 DOWNTO 0) --! LED outputs
     );
 END ENTITY top;
 
@@ -43,6 +42,15 @@ ARCHITECTURE rtl OF top IS
     SIGNAL spi_mosi_s    : std_logic; --! SPI MOSI input (stable)
     SIGNAL spi_ver_en_s  : std_logic; --! SPI Version Enable input (stable)
     SIGNAL pwm_adv       : std_logic; --! PWM advance signal
+    
+    -- PWM lines
+    SIGNAL pwm_lines : std_logic_vector(3 DOWNTO 0);
+    
+    -- SDM lines
+    SIGNAL sdm_lines : std_logic_vector(3 DOWNTO 0);
+    
+    -- Link (miso of block 0 to mosi of block 1)
+    SIGNAL block_link : std_logic;
 
     --! Component declaration for the MachX02 internal oscillator
     COMPONENT osch IS
@@ -109,10 +117,26 @@ BEGIN
             spi_cs_in     => spi_cs_s,
             spi_sclk_in   => spi_sclk_s,
             spi_mosi_in   => spi_mosi_s,
-            spi_miso_out  => spi_miso_out,
+            spi_miso_out  => block_link,
             spi_ver_en_in => spi_ver_en_s,
             pwm_adv_in    => pwm_adv,
-            pwm_out       => pwm_out
+            pwm_out       => pwm_lines
+        );
+
+    --! Instantiate the PWM device
+    i_spi_sdm_device : ENTITY work.spi_sdm_device(rtl)
+        GENERIC MAP (
+            ver_info => ver_info
+        )
+        PORT MAP (
+            mod_clk_in    => clk,
+            mod_rst_in    => rst,
+            spi_cs_in     => spi_cs_s,
+            spi_sclk_in   => spi_sclk_s,
+            spi_mosi_in   => block_link,
+            spi_miso_out  => spi_miso_out,
+            spi_ver_en_in => spi_ver_en_s,
+            sdm_out       => sdm_lines
         );
 
     --! @brief Reset process
@@ -152,7 +176,10 @@ BEGIN
         END IF;
         
     END PROCESS pr_spi_input;
-
-    ready_out <= NOT rst; -- Ready when not in reset
+    
+    led_out(7) <= pwm_lines(0);
+    led_out(6) <= pwm_lines(1);
+    led_out(5) <= sdm_lines(0);
+    led_out(4) <= sdm_lines(1);
 
 END ARCHITECTURE rtl;
