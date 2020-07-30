@@ -1,3 +1,4 @@
+![](https://codedocs.xyz/Malcolmnixon/MotionFpga.svg)
 
 # Motion Fpga
 This project builds a Motion FPGA used by processor to easily control motion devices. It is intended for use in projects such as:
