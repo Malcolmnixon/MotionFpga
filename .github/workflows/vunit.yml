@@ -25,4 +25,4 @@ jobs:
       
     - name: VUnit Utility
       run: python run_vunit.py
-      working-directory: fpga/common/utility/vunit
+      working-directory: fpga/common
