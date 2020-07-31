@@ -29,7 +29,7 @@ END ENTITY sdm_tb;
 ARCHITECTURE tb OF sdm_tb IS
 
     --! Test bench clock period
-    CONSTANT c_clk_period : time := 10ns;
+    CONSTANT c_clk_period : time := 10 ns;
     
     -- Signals to unit under test
     SIGNAL clk       : std_logic;            --! Clock input to unit under test
