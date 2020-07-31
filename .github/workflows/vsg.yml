@@ -1,0 +1,24 @@
+name: CI/VSG
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Setup Python
+      uses: actions/setup-python@v2
+    
+    - name: Install VSG
+      run: python -m pip install vsg
+      
+    - name: VHDL Style Guide Checks
+      run: python -m vsg -c ../../style_rules.yaml style_files.yaml -of syntastic
+      working-directory: fpga/targets/MachX02-7000HE-Breakout
