@@ -1,0 +1,28 @@
+name: CI/VUnit
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - uses: ghdl/setup-ghdl-ci@nightly
+      with:
+        backend: llvm
+
+    - name: Setup Python
+      uses: actions/setup-python@v2
+    
+    - name: Install VUnit
+      run: python -m pip install vunit_hdl
+      
+    - name: VUnit Utility
+      run: python run_vunit.py
+      working-directory: fpga/common/utility/vunit
