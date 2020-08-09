@@ -31,7 +31,7 @@ ARCHITECTURE tb OF sdm_tb IS
     TYPE t_stimulus_array IS ARRAY(natural RANGE <>) OF t_stimulus;
 
     --! Test bench clock period
-    CONSTANT c_clk_period : time := 10ns;
+    CONSTANT c_clk_period : time := 10 ns;
 
     --! Test stimulus
     CONSTANT c_stimulus : t_stimulus_array :=
