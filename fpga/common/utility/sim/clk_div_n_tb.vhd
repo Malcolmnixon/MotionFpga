@@ -19,8 +19,54 @@ END ENTITY clk_div_n_tb;
 --! Architecture tb of clk_div_n_tb entity
 ARCHITECTURE tb OF clk_div_n_tb IS
 
+    --! Stimulus record type
+    TYPE t_stimulus IS RECORD
+        name      : string(1 TO 20);
+        rst_in    : std_logic_vector(0 TO 7);
+        cnt_en_in : std_logic_vector(0 TO 7);
+        cnt_out   : std_logic_vector(0 TO 7);
+    END RECORD t_stimulus;
+    
+    --! Stimulus array type
+    TYPE t_stimulus_array IS ARRAY(natural RANGE <>) OF t_stimulus;
+    
     --! Test bench clock period
     CONSTANT c_clk_period : time := 10 ns;
+    
+    --! Test stimulus
+    CONSTANT c_stimulus : t_stimulus_array := 
+    (
+        ( 
+            name      => "Hold in reset       ",
+            rst_in    => "11111111",
+            cnt_en_in => "00000000",
+            cnt_out   => "00000000"
+        ),
+        ( 
+            name      => "Not enabled         ",
+            rst_in    => "00000000",
+            cnt_en_in => "00000000",
+            cnt_out   => "00000000"
+        ),
+        ( 
+            name      => "Normal counting 1   ",
+            rst_in    => "00000000",
+            cnt_en_in => "11111111",
+            cnt_out   => "00010001"
+        ),
+        ( 
+            name      => "Normal counting 2   ",
+            rst_in    => "00000000",
+            cnt_en_in => "11111111",
+            cnt_out   => "00010001"
+        ),
+        ( 
+            name      => "Freezing count      ",
+            rst_in    => "00000000",
+            cnt_en_in => "00001111",
+            cnt_out   => "11110001"
+        )
+    );
     
     -- Signals to unit under test
     SIGNAL clk     : std_logic; --! Clock input to unit under test
@@ -42,66 +88,39 @@ BEGIN
             cnt_out    => cnt_out
         );
 
-    --! @brief Clock generator process
-    --!
-    --! This generates the clk signal
-    pr_clock : PROCESS IS
-    BEGIN
-    
-        clk <= '0';
-        WAIT FOR c_clk_period / 2;
-
-        clk <= '1';
-        WAIT FOR c_clk_period / 2;
-        
-    END PROCESS pr_clock;
-
     --! @brief Stimulus process to drive PWM unit under test
     pr_stimulus : PROCESS IS
     BEGIN
         
-        -- Reset for 4 clock periods
-        rst    <= '1';
-        cnt_en <= '0';
-        WAIT FOR c_clk_period;
-        ASSERT (cnt_out = '0') REPORT "Expected output low while in reset" SEVERITY warning;
-        WAIT FOR c_clk_period;
-        ASSERT (cnt_out = '0') REPORT "Expected output low while in reset" SEVERITY warning;
-        WAIT FOR c_clk_period;
-        ASSERT (cnt_out = '0') REPORT "Expected output low while in reset" SEVERITY warning;
-        WAIT FOR c_clk_period;
-        ASSERT (cnt_out = '0') REPORT "Expected output low while in reset" SEVERITY warning;
-        
-        -- Take out of reset, but keep counting disabled for 4 clock periods
-        rst <= '0';
-        WAIT FOR c_clk_period;
-        ASSERT (cnt_out = '0') REPORT "Expected output low while disabled" SEVERITY warning;
-        WAIT FOR c_clk_period;
-        ASSERT (cnt_out = '0') REPORT "Expected output low while disabled" SEVERITY warning;
-        WAIT FOR c_clk_period;
-        ASSERT (cnt_out = '0') REPORT "Expected output low while disabled" SEVERITY warning;
-        WAIT FOR c_clk_period;
-        ASSERT (cnt_out = '0') REPORT "Expected output low while disabled" SEVERITY warning;
-        
-        -- Enable counting and verify output every fourth clock period
-        cnt_en <= '1';
-        WAIT FOR c_clk_period;
-        ASSERT (cnt_out = '0') REPORT "Expected output low while at time 1/4" SEVERITY warning;
-        WAIT FOR c_clk_period;
-        ASSERT (cnt_out = '0') REPORT "Expected output low while at time 2/4" SEVERITY warning;
-        WAIT FOR c_clk_period;
-        ASSERT (cnt_out = '0') REPORT "Expected output low while at time 3/4" SEVERITY warning;
-        WAIT FOR c_clk_period;
-        ASSERT (cnt_out = '1') REPORT "Expected output high while at time 4/4" SEVERITY warning;
-        WAIT FOR c_clk_period;
-        ASSERT (cnt_out = '0') REPORT "Expected output low while at time 1/4" SEVERITY warning;
-        WAIT FOR c_clk_period;
-        ASSERT (cnt_out = '0') REPORT "Expected output low while at time 2/4" SEVERITY warning;
-        WAIT FOR c_clk_period;
-        ASSERT (cnt_out = '0') REPORT "Expected output low while at time 3/4" SEVERITY warning;
-        WAIT FOR c_clk_period;
-        ASSERT (cnt_out = '1') REPORT "Expected output high while at time 4/4" SEVERITY warning;
+        -- Loop over stimulus
+        FOR s IN c_stimulus'range LOOP
+            -- Log start of stimulus
+            REPORT "Starting: " & c_stimulus(s).name SEVERITY note;
+            
+            -- Loop for test stimulus
+            FOR t IN 0 TO 7 LOOP
+                -- Drive inputs
+                clk    <= '0';
+                rst    <= c_stimulus(s).rst_in(t);
+                cnt_en <= c_stimulus(s).cnt_en_in(t);
+                WAIT FOR c_clk_period / 2;
+                
+                -- Rising edge
+                clk <= '1';
+                WAIT FOR c_clk_period / 2;
+                
+                -- Assert outputs
+                ASSERT cnt_out = c_stimulus(s).cnt_out(t)
+                    REPORT "At time " & integer'image(t) 
+                    & " expected " & std_logic'image(c_stimulus(s).cnt_out(t)) 
+                    & " but got " & std_logic'image(cnt_out)
+                    SEVERITY error;
+            END LOOP;
+        END LOOP;
 		
+        -- Log end of test
+        REPORT "Finished" SEVERITY note;
+        
         -- Finish the simulation
         std.env.finish;
 		

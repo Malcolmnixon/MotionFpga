@@ -29,8 +29,8 @@ library.cfg
 fpga/targets/*/simulation/*
 !fpga/targets/*/simulation/*.spf
 
-# VUnit output
-vunit_out
+# VHDLTest output
+VHDLTest.out
 
 # Doxygen output
 docs/html/

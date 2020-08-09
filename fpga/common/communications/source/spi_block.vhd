@@ -13,7 +13,7 @@ USE ieee.std_logic_1164.ALL;
 --!
 --! @image html spi_block_entity.png "SPI Block Entity"
 --!
---! This SPI block provides a simple 32-bit wide SPI shift register for 
+--! This SPI block provides a simple 32-bit wide SPI shift register for
 --! reading/writing data. At the start of a transfer when the CS goes low,
 --! the module drives the 'dat_rd_strt_out' signal for one clock to request
 --! new data be loaded into the 'dat_rd_reg_in' signal for transmitting.
@@ -32,7 +32,7 @@ ENTITY spi_block IS
         spi_miso_out    : OUT   std_logic;                     --! SPI MISO
         dat_rd_reg_in   : IN    std_logic_vector(31 DOWNTO 0); --! Data Read Register value
         dat_rd_strt_out : OUT   std_logic;                     --! Data Read Start flag
-        dat_wr_reg_out  : OUT   std_logic_vector(31 DOWNTO 0); --! Data Write Register value 
+        dat_wr_reg_out  : OUT   std_logic_vector(31 DOWNTO 0); --! Data Write Register value
         dat_wr_done_out : OUT   std_logic                      --! Data Write Done flag
     );
 END ENTITY spi_block;
@@ -48,27 +48,30 @@ ARCHITECTURE rtl OF spi_block IS
         st_clk_2nd,  --! Clock-second state waiting for SCLK-second-edge
         st_xfr_done  --! Transfer-done state where transfer is done (triggers write)
     );
-    
+
     --! SPI state
     SIGNAL state : spi_state;
-    
+
     --! SPI shift register
     SIGNAL shift : std_logic_vector(31 DOWNTO 0);
-    
+
+    --! Captured input
+    SIGNAL capture : std_logic;
+
 BEGIN
 
     --! @brief SPI shift process
     pr_shift : PROCESS (mod_clk_in, mod_rst_in) IS
     BEGIN
-    
+
         IF (mod_rst_in = '1') THEN
             -- Asynchronous reset of state
             state <= st_xfr_idle;
             shift <= (OTHERS => '0');
         ELSIF (rising_edge(mod_clk_in)) THEN
-        
+
             CASE state IS
-            
+
                 WHEN st_xfr_idle =>
                     -- Detect CS-assert
                     IF (spi_cs_in = '0') THEN
@@ -76,54 +79,58 @@ BEGIN
                     ELSE
                         state <= st_xfr_idle;
                     END IF;
-                    
+
                 WHEN st_xfr_strt =>
                     -- Load read-register
                     shift <= dat_rd_reg_in;
                     state <= st_clk_1st;
-                    
+
                 WHEN st_clk_1st =>
                     -- Wait for CS-deassert or SCLK-first-edge
                     IF (spi_cs_in = '1') THEN
-                        dat_wr_reg_out <= shift;                   -- Save write-register
+                        -- Save write-register
+                        dat_wr_reg_out <= shift;
                         state          <= st_xfr_done;
                     ELSIF (spi_sclk_in = '1') THEN
-                        shift <= shift(30 DOWNTO 0) & spi_mosi_in; -- Save bit
-                        state <= st_clk_2nd;
+                        -- Capture input on rising edge
+                        capture <= spi_mosi_in;
+                        state   <= st_clk_2nd;
                     ELSE
                         state <= st_clk_1st;
                     END IF;
-                    
+
                 WHEN st_clk_2nd =>
                     -- Wait for SCLK-second-edge
                     IF (spi_sclk_in = '0') THEN
+                        -- Shift on falling edge
+                        shift <= shift(30 DOWNTO 0) & capture;
                         state <= st_clk_1st;
                     ELSE
                         state <= st_clk_2nd;
                     END IF;
-                    
+
                 WHEN st_xfr_done =>
                     -- Transition to transfer-idle state
                     state <= st_xfr_idle;
-                    
+
                 WHEN OTHERS =>
                     state <= st_xfr_idle;
-                    
+
             END CASE;
-            
+
         END IF;
-    
+
     END PROCESS pr_shift;
 
     -- Always drive MSB of shift register to MISO
     spi_miso_out <= shift(31);
-    
+
     -- Trigger the read-start when in the transfer-start state
     dat_rd_strt_out <= '1' WHEN state = st_xfr_strt ELSE
                        '0';
-    
+
     -- Trigger the write-done when in the transfer-done state
-    dat_wr_done_out <= '1' WHEN state = st_xfr_done ELSE 
+    dat_wr_done_out <= '1' WHEN state = st_xfr_done ELSE
                        '0';
 
 END ARCHITECTURE rtl;
