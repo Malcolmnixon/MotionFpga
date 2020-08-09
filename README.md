@@ -1,4 +1,4 @@
-![CI/VSG](https://github.com/Malcolmnixon/MotionFpga/workflows/CI/VSG/badge.svg) ![CI/VUnit](https://github.com/Malcolmnixon/MotionFpga/workflows/CI/VUnit/badge.svg) [![Documented](https://codedocs.xyz/Malcolmnixon/MotionFpga.svg)](https://codedocs.xyz/Malcolmnixon/MotionFpga/)
+![CI/VSG](https://github.com/Malcolmnixon/MotionFpga/workflows/CI/VSG/badge.svg) ![CI/VHDLTest](https://github.com/Malcolmnixon/MotionFpga/workflows/CI/VHDLTest/badge.svg) [![Documented](https://codedocs.xyz/Malcolmnixon/MotionFpga.svg)](https://codedocs.xyz/Malcolmnixon/MotionFpga/)
 
 # Motion Fpga
 This project builds a Motion FPGA used by processor to easily control motion devices. It is intended for use in projects such as:
