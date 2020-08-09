@@ -76,23 +76,26 @@ BEGIN
         spi_mosi <= '0'; -- MOSI: idle
         
         -- Reset for 5 clocks
+        REPORT "Hold in Reset" SEVERITY note;
         mod_rst <= '1';
         WAIT FOR c_clk_period * 5;
-        ASSERT (spi_miso    = '0') REPORT "Expected spi_miso low while in reset" SEVERITY warning;
-        ASSERT (dat_rd_strt = '0') REPORT "Expected dat_rd_strt low while in reset" SEVERITY warning;
-        ASSERT (dat_wr_done = '0') REPORT "Expected dat_wr_done low while in reset" SEVERITY warning;
+        ASSERT (spi_miso    = '0') REPORT "Expected spi_miso low while in reset" SEVERITY error;
+        ASSERT (dat_rd_strt = '0') REPORT "Expected dat_rd_strt low while in reset" SEVERITY error;
+        ASSERT (dat_wr_done = '0') REPORT "Expected dat_wr_done low while in reset" SEVERITY error;
         
         -- Release reset for 5 clocks
+        REPORT "Take out of Reset" SEVERITY note;
         mod_rst <= '0';
         WAIT FOR c_clk_period * 5;
-        ASSERT (spi_miso    = '0') REPORT "Expected spi_miso low while idle" SEVERITY warning;
-        ASSERT (dat_rd_strt = '0') REPORT "Expected dat_rd_strt low while idle" SEVERITY warning;
-        ASSERT (dat_wr_done = '0') REPORT "Expected dat_wr_done low while idle" SEVERITY warning;
+        ASSERT (spi_miso    = '0') REPORT "Expected spi_miso low while idle" SEVERITY error;
+        ASSERT (dat_rd_strt = '0') REPORT "Expected dat_rd_strt low while idle" SEVERITY error;
+        ASSERT (dat_wr_done = '0') REPORT "Expected dat_wr_done low while idle" SEVERITY error;
         
         -- Start SPI transfer
+        REPORT "Start SPI Transfer" SEVERITY note;
         spi_cs <= '0';
         WAIT FOR c_clk_period;
-        ASSERT (dat_rd_strt = '1') REPORT "Expected dat_rd_strt high for transfer start" SEVERITY warning;
+        ASSERT (dat_rd_strt = '1') REPORT "Expected dat_rd_strt high for transfer start" SEVERITY error;
         
         -- Provide test pattern
         dat_rd_reg <= X"AA550011";
@@ -100,9 +103,10 @@ BEGIN
         
         -- Wait for 5 clocks (CS-to-Start)
         WAIT FOR c_clk_period * 5;
-        ASSERT (dat_rd_strt = '0') REPORT "Expected dat_rd_strt low after transfer start" SEVERITY warning;
+        ASSERT (dat_rd_strt = '0') REPORT "Expected dat_rd_strt low after transfer start" SEVERITY error;
         
         -- Clock SPI bus
+        REPORT "Transfer 32 Bits" SEVERITY note;
         FOR i IN 31 DOWNTO 0 LOOP
             -- Drive MOSI
             spi_mosi <= mosi_wr(i);
@@ -123,18 +127,23 @@ BEGIN
         WAIT FOR c_clk_period * 5;
         
         -- End SPI transfer
+        REPORT "End SPI Transfer" SEVERITY note;
         spi_cs <= '1';
         WAIT FOR c_clk_period;
-        ASSERT (dat_wr_done = '1') REPORT "Expected dat_wr_done high for transfer done" SEVERITY warning;
+        ASSERT (dat_wr_done = '1') REPORT "Expected dat_wr_done high for transfer done" SEVERITY error;
     
         -- Wait for 10 clocks
         WAIT FOR c_clk_period * 10;
-        ASSERT (dat_wr_done = '0') REPORT "Expected dat_wr_done low after transfer done" SEVERITY warning;
+        ASSERT (dat_wr_done = '0') REPORT "Expected dat_wr_done low after transfer done" SEVERITY error;
         
         -- Verify test patterns
-        ASSERT (dat_wr_reg = mosi_wr) REPORT "Expected dat_wr_reg matches mosi_wr" SEVERITY warning;
-        ASSERT (miso_rd = dat_rd_reg) REPORT "Expected miso_rd matches dat_rd_reg" SEVERITY warning;
+        REPORT "Test Transfer Data" SEVERITY note;
+        ASSERT (dat_wr_reg = mosi_wr) REPORT "Expected dat_wr_reg matches mosi_wr" SEVERITY error;
+        ASSERT (miso_rd = dat_rd_reg) REPORT "Expected miso_rd matches dat_rd_reg" SEVERITY error;
     
+        -- Log end of test
+        REPORT "Finished" SEVERITY note;
+        
         -- Finish the simulation
         std.env.finish;
         

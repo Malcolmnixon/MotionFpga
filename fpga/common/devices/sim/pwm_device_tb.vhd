@@ -68,6 +68,7 @@ BEGIN
     BEGIN
         
         -- Reset inputs
+        REPORT "Hold in Reset" SEVERITY note;
         dat_wr_reg  <= (OTHERS => '0');
         dat_wr_done <= '0';
         dat_rd_strt <= '0';
@@ -77,34 +78,41 @@ BEGIN
         WAIT FOR c_clk_period * 8;
         
         -- Take out of reset for 8 clock periods
+        REPORT "Take out of Reset" SEVERITY note;
         rst <= '0';
         WAIT FOR c_clk_period * 8;
         
         -- Read PWM device
+        REPORT "Read PWM values" SEVERITY note;
         dat_rd_strt <= '1';
         WAIT FOR c_clk_period;
         dat_rd_strt <= '0';
         ASSERT (dat_rd_reg = B"00000000_00000000_00000000_00000000")
             REPORT "Expected pwm_device zero duty cycles after reset"
-            SEVERITY warning;
+            SEVERITY error;
         
         -- Write PWM command
+        REPORT "Write PWM values" SEVERITY note;
         dat_wr_reg  <= B"11111111_10101010_01010101_00000000";
         dat_wr_done <= '1';
         WAIT FOR c_clk_period;
         dat_wr_done <= '0';
         
         -- Read PWM device
+        REPORT "Read PWM values" SEVERITY note;
         dat_rd_strt <= '1';
         WAIT FOR c_clk_period;
         dat_rd_strt <= '0';
         ASSERT (dat_rd_reg = B"11111111_10101010_01010101_00000000") 
             REPORT "Expected pwm_device non zero duty cycles after configuration"
-            SEVERITY warning;
+            SEVERITY error;
         
         -- Take out of reset for 800 clock periods
         rst <= '0';
         WAIT FOR c_clk_period * 800;
+        
+        -- Log end of test
+        REPORT "Finished" SEVERITY note;
         
         -- Finish the simulation
         std.env.finish;

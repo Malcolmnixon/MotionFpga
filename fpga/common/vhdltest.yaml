@@ -1,0 +1,29 @@
+files:
+ # Source files
+ - utility/source/blink.vhd
+ - utility/source/clk_div_n.vhd
+ - utility/source/pwm.vhd
+ - utility/source/sdm.vhd
+ - devices/source/pwm_device.vhd
+ - devices/source/sdm_device.vhd
+ - communications/source/spi_block.vhd
+ - communications/source/spi_version_block.vhd
+ - communications/source/spi_pwm_device.vhd
+ - communications/source/spi_sdm_device.vhd
+ 
+ # Simulation files
+ - utility/sim/clk_div_n_tb.vhd
+ - utility/sim/pwm_tb.vhd
+ - utility/sim/sdm_tb.vhd
+ - devices/sim/pwm_device_tb.vhd
+ - communications/sim/spi_block_tb.vhd
+ - communications/sim/spi_version_block_tb.vhd
+
+tests:
+ # Testbenches
+ - clk_div_n_tb
+ - pwm_tb
+ - sdm_tb
+ - pwm_device_tb
+ - spi_block_tb
+ - spi_version_block_tb
