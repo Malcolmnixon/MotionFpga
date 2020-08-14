@@ -21,10 +21,10 @@ ARCHITECTURE tb OF sdm_tb IS
 
     --! Stimulus record type
     TYPE t_stimulus IS RECORD
-        name     : string(1 TO 20);
-        rst_in   : std_logic_vector(0 TO 12);
-        level_in : unsigned(1 DOWNTO 0);
-        sdm_out  : std_logic_vector(0 TO 12);
+        name      : string(1 TO 20);           --! Stimulus name
+        rst       : std_logic_vector(0 TO 12); --! rst input to uut
+        sdm_level : unsigned(1 DOWNTO 0);      --! sdm_level input to uut
+        sdm_out   : std_logic_vector(0 TO 12); --! sdm_out expected from uut
     END RECORD t_stimulus;
 
     --! Stimulus array type
@@ -38,32 +38,32 @@ ARCHITECTURE tb OF sdm_tb IS
     (
         (
             name      => "Hold in reset       ",
-            rst_in    => "1111111111111",
-            level_in  => B"11",
+            rst       => "1111111111111",
+            sdm_level => B"11",
             sdm_out   => "0000000000000"
         ),
         (
             name      => "Running value 0     ",
-            rst_in    => "1000000000000",
-            level_in  => B"00",
+            rst       => "1000000000000",
+            sdm_level => B"00",
             sdm_out   => "0000000000000"
         ),
         (
             name      => "Running value 1     ",
-            rst_in    => "1000000000000",
-            level_in  => B"01",
+            rst       => "1000000000000",
+            sdm_level => B"01",
             sdm_out   => "0000100010001"
         ),
         (
             name      => "Running value 2     ",
-            rst_in    => "1000000000000",
-            level_in  => B"10",
+            rst       => "1000000000000",
+            sdm_level => B"10",
             sdm_out   => "0010101010101"
         ),
         (
             name      => "Running value 3     ",
-            rst_in    => "1000000000000",
-            level_in  => B"11",
+            rst       => "1000000000000",
+            sdm_level => B"11",
             sdm_out   => "0011101110111"
         )
     );
@@ -88,41 +88,44 @@ BEGIN
             sdm_out      => sdm_out
         );
 
-    --! @brief Clock generator process
-    --!
-    --! This generates the clk signal and the adv signal
+    --! @brief Clock generation process
     pr_clock : PROCESS IS
     BEGIN
-
+    
+        -- Low for 1/2 clock period
         clk <= '0';
         WAIT FOR c_clk_period / 2;
-
+        
+        -- High for 1/2 clock period
         clk <= '1';
         WAIT FOR c_clk_period / 2;
-
+        
     END PROCESS pr_clock;
-
+    
     --! @brief Stimulus process to drive PWM unit under test
     pr_stimulus : PROCESS IS
     BEGIN
 
+        -- Initialize entity inputs
+        rst       <= '1';
+        sdm_level <= (OTHERS => '0');
+        
         -- Loop over stimulus
         FOR s IN c_stimulus'range LOOP
             -- Log start of stimulus
             REPORT "Starting: " & c_stimulus(s).name SEVERITY note;
 
-            sdm_level <= c_stimulus(s).level_in;
+            -- Set level for this stimulus
+            sdm_level <= c_stimulus(s).sdm_level;
 
             -- Loop for test stimulus
             FOR t IN 0 TO 9 LOOP
-                -- Drive inputs
-                clk <= '0';
-                rst <= c_stimulus(s).rst_in(t);
-                WAIT FOR c_clk_period / 2;
+                -- Set inputs then wait for clock to rise
+                rst <= c_stimulus(s).rst(t);
+                WAIT UNTIL clk = '1';
 
-                -- Rising edge
-                clk <= '1';
-                WAIT FOR c_clk_period / 2;
+                -- Wait for clk to fall
+                WAIT UNTIL clk = '0';
 
                 -- Assert outputs
                 ASSERT sdm_out = c_stimulus(s).sdm_out(t)
