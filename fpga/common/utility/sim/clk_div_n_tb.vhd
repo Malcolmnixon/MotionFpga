@@ -21,10 +21,10 @@ ARCHITECTURE tb OF clk_div_n_tb IS
 
     --! Stimulus record type
     TYPE t_stimulus IS RECORD
-        name      : string(1 TO 20);
-        rst_in    : std_logic_vector(0 TO 7);
-        cnt_en_in : std_logic_vector(0 TO 7);
-        cnt_out   : std_logic_vector(0 TO 7);
+        name    : string(1 TO 20);          --! Stimulus name
+        rst     : std_logic_vector(0 TO 7); --! rst input to uut
+        cnt_en  : std_logic_vector(0 TO 7); --! cnt_en input to uut
+        cnt_out : std_logic_vector(0 TO 7); --! cnt_out expected from uut
     END RECORD t_stimulus;
     
     --! Stimulus array type
@@ -37,34 +37,34 @@ ARCHITECTURE tb OF clk_div_n_tb IS
     CONSTANT c_stimulus : t_stimulus_array := 
     (
         ( 
-            name      => "Hold in reset       ",
-            rst_in    => "11111111",
-            cnt_en_in => "00000000",
-            cnt_out   => "00000000"
+            name    => "Hold in reset       ",
+            rst     => "11111111",
+            cnt_en  => "00000000",
+            cnt_out => "00000000"
         ),
         ( 
-            name      => "Not enabled         ",
-            rst_in    => "00000000",
-            cnt_en_in => "00000000",
-            cnt_out   => "00000000"
+            name    => "Not enabled         ",
+            rst     => "00000000",
+            cnt_en  => "00000000",
+            cnt_out => "00000000"
         ),
         ( 
-            name      => "Normal counting 1   ",
-            rst_in    => "00000000",
-            cnt_en_in => "11111111",
-            cnt_out   => "00010001"
+            name    => "Normal counting 1   ",
+            rst     => "00000000",
+            cnt_en  => "11111111",
+            cnt_out => "00010001"
         ),
         ( 
-            name      => "Normal counting 2   ",
-            rst_in    => "00000000",
-            cnt_en_in => "11111111",
-            cnt_out   => "00010001"
+            name    => "Normal counting 2   ",
+            rst     => "00000000",
+            cnt_en  => "11111111",
+            cnt_out => "00010001"
         ),
         ( 
-            name      => "Freezing count      ",
-            rst_in    => "00000000",
-            cnt_en_in => "00001111",
-            cnt_out   => "11110001"
+            name    => "Freezing count      ",
+            rst     => "00000000",
+            cnt_en  => "00001111",
+            cnt_out => "11110001"
         )
     );
     
@@ -88,10 +88,29 @@ BEGIN
             cnt_out    => cnt_out
         );
 
+    --! @brief Clock generation process
+    pr_clock : PROCESS IS
+    BEGIN
+    
+        -- Low for 1/2 clock period
+        clk <= '0';
+        WAIT FOR c_clk_period / 2;
+        
+        -- High for 1/2 clock period
+        clk <= '1';
+        WAIT FOR c_clk_period / 2;
+        
+    END PROCESS pr_clock;
+    
     --! @brief Stimulus process to drive PWM unit under test
     pr_stimulus : PROCESS IS
     BEGIN
         
+        -- Initialize entity inputs
+        rst    <= '1';
+        cnt_en <= '0';
+        WAIT FOR c_clk_period;
+
         -- Loop over stimulus
         FOR s IN c_stimulus'range LOOP
             -- Log start of stimulus
@@ -99,15 +118,13 @@ BEGIN
             
             -- Loop for test stimulus
             FOR t IN 0 TO 7 LOOP
-                -- Drive inputs
-                clk    <= '0';
-                rst    <= c_stimulus(s).rst_in(t);
-                cnt_en <= c_stimulus(s).cnt_en_in(t);
-                WAIT FOR c_clk_period / 2;
+                -- Set inputs then wait for clock to rise
+                rst    <= c_stimulus(s).rst(t);
+                cnt_en <= c_stimulus(s).cnt_en(t);
+                WAIT UNTIL clk = '1';
                 
-                -- Rising edge
-                clk <= '1';
-                WAIT FOR c_clk_period / 2;
+                -- Wait for clk to fall
+                WAIT UNTIL clk = '0';
                 
                 -- Assert outputs
                 ASSERT cnt_out = c_stimulus(s).cnt_out(t)
