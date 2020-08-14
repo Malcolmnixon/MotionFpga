@@ -2,6 +2,7 @@ files:
  # Source files
  - utility/source/blink.vhd
  - utility/source/clk_div_n.vhd
+ - utility/source/edge_detect.vhd
  - utility/source/pwm.vhd
  - utility/source/sdm.vhd
  - devices/source/pwm_device.vhd
@@ -13,6 +14,7 @@ files:
  
  # Simulation files
  - utility/sim/clk_div_n_tb.vhd
+ - utility/sim/edge_detect_tb.vhd
  - utility/sim/pwm_tb.vhd
  - utility/sim/sdm_tb.vhd
  - devices/sim/pwm_device_tb.vhd
@@ -22,6 +24,7 @@ files:
 tests:
  # Testbenches
  - clk_div_n_tb
+ - edge_detect_tb
  - pwm_tb
  - sdm_tb
  - pwm_device_tb
