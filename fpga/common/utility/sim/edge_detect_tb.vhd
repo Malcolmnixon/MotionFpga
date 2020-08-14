@@ -95,8 +95,8 @@ BEGIN
     BEGIN
         
         -- Initialize entity inputs
-        rst    <= '1';
-        sig    <= '0';
+        rst <= '1';
+        sig <= '0';
         WAIT FOR c_clk_period;
 
         -- Loop over stimulus
@@ -107,8 +107,8 @@ BEGIN
             -- Loop for test stimulus
             FOR t IN 0 TO 7 LOOP
                 -- Set inputs then wait for clock to rise
-                rst    <= c_stimulus(s).rst(t);
-                sig    <= c_stimulus(s).sig(t);
+                rst <= c_stimulus(s).rst(t);
+                sig <= c_stimulus(s).sig(t);
                 WAIT UNTIL clk = '1';
                 
                 -- Wait for clk to fall
