@@ -27,7 +27,6 @@ ARCHITECTURE tb OF spi_block_tb IS
     SIGNAL spi_mosi    : std_logic;                     --! SPI MOSI input to uut
     SIGNAL spi_miso    : std_logic;                     --! SPI MISO output from uut
     SIGNAL dat_rd_reg  : std_logic_vector(31 DOWNTO 0); --! Data read register input to uut
-    SIGNAL dat_rd_strt : std_logic;                     --! Data read start output from uut
     SIGNAL dat_wr_reg  : std_logic_vector(31 DOWNTO 0); --! Data write register output from uut
     SIGNAL dat_wr_done : std_logic;                     --! Data write done output from uut
     
@@ -47,7 +46,6 @@ BEGIN
             spi_mosi_in     => spi_mosi,
             spi_miso_out    => spi_miso,
             dat_rd_reg_in   => dat_rd_reg,
-            dat_rd_strt_out => dat_rd_strt,
             dat_wr_reg_out  => dat_wr_reg,
             dat_wr_done_out => dat_wr_done
         );
@@ -80,7 +78,6 @@ BEGIN
         mod_rst <= '1';
         WAIT FOR c_clk_period * 5;
         ASSERT (spi_miso    = '0') REPORT "Expected spi_miso low while in reset" SEVERITY error;
-        ASSERT (dat_rd_strt = '0') REPORT "Expected dat_rd_strt low while in reset" SEVERITY error;
         ASSERT (dat_wr_done = '0') REPORT "Expected dat_wr_done low while in reset" SEVERITY error;
         
         -- Release reset for 5 clocks
@@ -88,39 +85,32 @@ BEGIN
         mod_rst <= '0';
         WAIT FOR c_clk_period * 5;
         ASSERT (spi_miso    = '0') REPORT "Expected spi_miso low while idle" SEVERITY error;
-        ASSERT (dat_rd_strt = '0') REPORT "Expected dat_rd_strt low while idle" SEVERITY error;
         ASSERT (dat_wr_done = '0') REPORT "Expected dat_wr_done low while idle" SEVERITY error;
-        
-        -- Start SPI transfer
-        REPORT "Start SPI Transfer" SEVERITY note;
-        spi_cs <= '0';
-        WAIT FOR c_clk_period;
-        ASSERT (dat_rd_strt = '1') REPORT "Expected dat_rd_strt high for transfer start" SEVERITY error;
         
         -- Provide test pattern
         dat_rd_reg <= X"AA550011";
         mosi_wr    <= X"DEADBEEF";
         
+        -- Start SPI transfer
+        REPORT "Start SPI Transfer" SEVERITY note;
+        spi_cs <= '0';
+        WAIT FOR c_clk_period;
+        
         -- Wait for 5 clocks (CS-to-Start)
         WAIT FOR c_clk_period * 5;
-        ASSERT (dat_rd_strt = '0') REPORT "Expected dat_rd_strt low after transfer start" SEVERITY error;
         
         -- Clock SPI bus
         REPORT "Transfer 32 Bits" SEVERITY note;
         FOR i IN 31 DOWNTO 0 LOOP
-            -- Drive MOSI
+            -- Drive data and first edge
             spi_mosi <= mosi_wr(i);
-            
-            -- Wait for first-edge delay
+            spi_sclk <= '1';
             WAIT FOR c_clk_period * 2;
-            
-            -- Read MISO and transition to second-edge
-            miso_rd(i) <= spi_miso;
-            spi_sclk   <= '1';
 
-            -- Wait for second-edge delay
+            -- Capture data and drive second edge
+            miso_rd(i) <= spi_miso;
+            spi_sclk   <= '0';
             WAIT FOR c_clk_period * 2;
-            spi_sclk <= '0';
         END LOOP;
 
         -- Wait for 5 clocks (End-to-CS)

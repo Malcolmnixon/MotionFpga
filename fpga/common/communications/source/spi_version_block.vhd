@@ -28,7 +28,6 @@ ENTITY spi_version_block IS
         spi_miso_out    : OUT   std_logic;                     --! SPI MISO
         spi_ver_en_in   : IN    std_logic;                     --! SPI Version Enable flag
         dat_rd_reg_in   : IN    std_logic_vector(31 DOWNTO 0); --! Data Read Register value
-        dat_rd_strt_out : OUT   std_logic;                     --! Data Read Start flag
         dat_wr_reg_out  : OUT   std_logic_vector(31 DOWNTO 0); --! Data Write Register value 
         dat_wr_done_out : OUT   std_logic                      --! Data Write Done flag
     );
@@ -39,7 +38,6 @@ ARCHITECTURE rtl OF spi_version_block IS
 
     -- Internal data signals
     SIGNAL dat_rd_reg  : std_logic_vector(31 DOWNTO 0); --! Internal data read register
-    SIGNAL dat_rd_strt : std_logic;                     --! Internal data read start
     SIGNAL dat_wr_done : std_logic;                     --! Internal data write done
 
 BEGIN
@@ -54,13 +52,11 @@ BEGIN
             spi_mosi_in     => spi_mosi_in,
             spi_miso_out    => spi_miso_out,
             dat_rd_reg_in   => dat_rd_reg,
-            dat_rd_strt_out => dat_rd_strt,
             dat_wr_reg_out  => dat_wr_reg_out,
             dat_wr_done_out => dat_wr_done
         );
 
-    -- Expose read and write when not performing version operations
-    dat_rd_strt_out <= dat_rd_strt AND NOT spi_ver_en_in;
+    -- Expose write when not performing version operations
     dat_wr_done_out <= dat_wr_done AND NOT spi_ver_en_in;
 
     -- Data read is either version information, or modules read dat

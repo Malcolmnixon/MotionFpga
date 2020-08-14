@@ -40,7 +40,6 @@ END ENTITY spi_pwm_device;
 ARCHITECTURE rtl OF spi_pwm_device IS
 
     SIGNAL dat_rd_reg  : std_logic_vector(31 DOWNTO 0); --! Data Read Register value
-    SIGNAL dat_rd_strt : std_logic;                     --! Data Read Start flag
     SIGNAL dat_wr_reg  : std_logic_vector(31 DOWNTO 0); --! Data Write Register value 
     SIGNAL dat_wr_done : std_logic;                     --! Data Write Done flag
     
@@ -60,7 +59,6 @@ BEGIN
             spi_miso_out    => spi_miso_out,
             spi_ver_en_in   => spi_ver_en_in,
             dat_rd_reg_in   => dat_rd_reg,
-            dat_rd_strt_out => dat_rd_strt,
             dat_wr_reg_out  => dat_wr_reg,
             dat_wr_done_out => dat_wr_done
         );
@@ -72,7 +70,6 @@ BEGIN
             mod_rst_in     => mod_rst_in,
             dat_wr_done_in => dat_wr_done,
             dat_wr_reg_in  => dat_wr_reg,
-            dat_rd_strt_in => dat_rd_strt,
             dat_rd_reg_out => dat_rd_reg,
             pwm_adv_in     => pwm_adv_in,
             pwm_out        => pwm_out

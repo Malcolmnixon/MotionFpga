@@ -25,7 +25,6 @@ ENTITY pwm_device IS
         mod_rst_in     : IN    std_logic;                     --! Module Reset (async)
         dat_wr_done_in : IN    std_logic;                     --! Device Write Done flag
         dat_wr_reg_in  : IN    std_logic_vector(31 DOWNTO 0); --! Device Write Register value
-        dat_rd_strt_in : IN    std_logic;                     --! Device Read Start flag
         dat_rd_reg_out : OUT   std_logic_vector(31 DOWNTO 0); --! Device Read Register value
         pwm_adv_in     : IN    std_logic;                     --! PWM Advance flag
         pwm_out        : OUT   std_logic_vector(3 DOWNTO 0)   --! PWM outputs
@@ -85,7 +84,7 @@ BEGIN
     pr_read : PROCESS (mod_clk_in) IS
     BEGIN
     
-        IF (rising_edge(mod_clk_in) AND dat_rd_strt_in = '1') THEN
+        IF (rising_edge(mod_clk_in)) THEN
             -- Populate read register with duty cycles
             dat_rd_reg_out <= std_logic_vector(to_unsigned(pwm_duty(3), 8)) &
                               std_logic_vector(to_unsigned(pwm_duty(2), 8)) &
