@@ -27,7 +27,6 @@ ARCHITECTURE tb OF pwm_device_tb IS
     SIGNAL rst         : std_logic;                     --! Reset input to pwm device
     SIGNAL dat_wr_done : std_logic;                     --! Data write done input to pwm device
     SIGNAL dat_wr_reg  : std_logic_vector(31 DOWNTO 0); --! Data write register input to pwm device
-    SIGNAL dat_rd_strt : std_logic;                     --! Data read start input to pwm device
     SIGNAL dat_rd_reg  : std_logic_vector(31 DOWNTO 0); --! Data read register output from pwm device
     SIGNAL pwm_adv     : std_logic;                     --! PWM advance input to pwm device
     SIGNAL pwm_out     : std_logic_vector(3 DOWNTO 0);  --! PWM outputs from pwm device
@@ -41,7 +40,6 @@ BEGIN
             mod_rst_in     => rst,
             dat_wr_done_in => dat_wr_done,
             dat_wr_reg_in  => dat_wr_reg,
-            dat_rd_strt_in => dat_rd_strt,
             dat_rd_reg_out => dat_rd_reg,
             pwm_adv_in     => pwm_adv,
             pwm_out        => pwm_out
@@ -71,7 +69,6 @@ BEGIN
         REPORT "Hold in Reset" SEVERITY note;
         dat_wr_reg  <= (OTHERS => '0');
         dat_wr_done <= '0';
-        dat_rd_strt <= '0';
         
         -- Reset for 8 clock periods
         rst <= '1';
@@ -84,9 +81,7 @@ BEGIN
         
         -- Read PWM device
         REPORT "Read PWM values" SEVERITY note;
-        dat_rd_strt <= '1';
         WAIT FOR c_clk_period;
-        dat_rd_strt <= '0';
         ASSERT (dat_rd_reg = B"00000000_00000000_00000000_00000000")
             REPORT "Expected pwm_device zero duty cycles after reset"
             SEVERITY error;
@@ -99,10 +94,8 @@ BEGIN
         dat_wr_done <= '0';
         
         -- Read PWM device
-        REPORT "Read PWM values" SEVERITY note;
-        dat_rd_strt <= '1';
         WAIT FOR c_clk_period;
-        dat_rd_strt <= '0';
+        REPORT "Read PWM values" SEVERITY note;
         ASSERT (dat_rd_reg = B"11111111_10101010_01010101_00000000") 
             REPORT "Expected pwm_device non zero duty cycles after configuration"
             SEVERITY error;
