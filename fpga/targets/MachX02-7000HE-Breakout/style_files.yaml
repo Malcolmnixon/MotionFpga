@@ -17,7 +17,7 @@ file_list:
  - ../../common/communications/source/spi_pwm_device.vhd
  - ../../common/communications/source/spi_sdm_device.vhd
  - ../../common/communications/source/spi_version_block.vhd
-# - ../../common/communications/sim/sim_spi_master.vhd
+ - ../../common/communications/sim/sim_spi_master.vhd
  - ../../common/communications/sim/spi_block_tb.vhd
  - ../../common/communications/sim/spi_version_block_tb.vhd
  - ../../common/communications/sim/spi_pwm_device_tb.vhd
