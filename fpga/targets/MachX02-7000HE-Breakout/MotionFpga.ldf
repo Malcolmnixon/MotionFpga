@@ -14,6 +14,9 @@
         <Source name="../../common/utility/source/clk_div_n.vhd" type="VHDL" type_short="VHDL">
             <Options/>
         </Source>
+        <Source name="../../common/utility/source/edge_detect.vhd" type="VHDL" type_short="VHDL">
+            <Options/>
+        </Source>
         <Source name="../../common/utility/source/pwm.vhd" type="VHDL" type_short="VHDL">
             <Options/>
         </Source>
@@ -41,13 +44,25 @@
         <Source name="impl1/source/top.vhd" type="VHDL" type_short="VHDL">
             <Options top_module="top"/>
         </Source>
+        <Source name="../../common/utility/sim/sim_on_percent.vhd" type="VHDL" type_short="VHDL" syn_sim="SimOnly">
+            <Options/>
+        </Source>
         <Source name="../../common/utility/sim/clk_div_n_tb.vhd" type="VHDL" type_short="VHDL" syn_sim="SimOnly">
+            <Options/>
+        </Source>
+        <Source name="../../common/utility/sim/edge_detect_tb.vhd" type="VHDL" type_short="VHDL" syn_sim="SimOnly">
             <Options/>
         </Source>
         <Source name="../../common/utility/sim/pwm_tb.vhd" type="VHDL" type_short="VHDL" syn_sim="SimOnly">
             <Options/>
         </Source>
+        <Source name="../../common/utility/sim/sdm_tb.vhd" type="VHDL" type_short="VHDL" syn_sim="SimOnly">
+            <Options/>
+        </Source>
         <Source name="../../common/devices/sim/pwm_device_tb.vhd" type="VHDL" type_short="VHDL" syn_sim="SimOnly">
+            <Options/>
+        </Source>
+        <Source name="../../common/communications/sim/sim_spi_master.vhd" type="VHDL" type_short="VHDL" syn_sim="SimOnly">
             <Options/>
         </Source>
         <Source name="../../common/communications/sim/spi_block_tb.vhd" type="VHDL" type_short="VHDL" syn_sim="SimOnly">
@@ -56,7 +71,7 @@
         <Source name="../../common/communications/sim/spi_version_block_tb.vhd" type="VHDL" type_short="VHDL" syn_sim="SimOnly">
             <Options/>
         </Source>
-        <Source name="../../common/utility/sim/sdm_tb.vhd" type="VHDL" type_short="VHDL" syn_sim="SimOnly">
+        <Source name="../../common/communications/sim/spi_pwm_device_tb.vhd" type="VHDL" type_short="VHDL" syn_sim="SimOnly">
             <Options/>
         </Source>
         <Source name="impl1/impl1.xcf" type="Programming Project File" type_short="Programming">

@@ -13,13 +13,16 @@ files:
  - communications/source/spi_sdm_device.vhd
  
  # Simulation files
+ - utility/sim/sim_on_percent.vhd
  - utility/sim/clk_div_n_tb.vhd
  - utility/sim/edge_detect_tb.vhd
  - utility/sim/pwm_tb.vhd
  - utility/sim/sdm_tb.vhd
  - devices/sim/pwm_device_tb.vhd
+ - communications/sim/sim_spi_master.vhd
  - communications/sim/spi_block_tb.vhd
  - communications/sim/spi_version_block_tb.vhd
+ - communications/sim/spi_pwm_device_tb.vhd
 
 tests:
  # Testbenches
@@ -30,3 +33,4 @@ tests:
  - pwm_device_tb
  - spi_block_tb
  - spi_version_block_tb
+ - spi_pwm_device_tb

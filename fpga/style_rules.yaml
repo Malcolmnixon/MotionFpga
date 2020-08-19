@@ -82,7 +82,18 @@ rule:
 
   signal_002:
     case: 'upper'   # Upper-case SIGNAL keyword
-  
+
+  function_004:
+    case: 'upper'   # Upper-case BEGIN keyword
+  function_005:
+    case: 'upper'   # Upper-case FUNCTION keyword
+  function_006:
+    disable: true   # Allow comment before function
+  function_013:
+    case: 'upper'   # Upper-case END keyword
+  function_014:
+    case: 'upper'   # Upper-case FUNCTION keyword
+    
   process_004:
     case: 'upper'   # Upper-case BEGIN keyword
   process_005:
