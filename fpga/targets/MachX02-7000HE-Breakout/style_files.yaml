@@ -13,6 +13,7 @@ file_list:
  - ../../common/devices/source/pwm_device.vhd
  - ../../common/devices/source/sdm_device.vhd
  - ../../common/devices/sim/pwm_device_tb.vhd
+ - ../../common/devices/sim/sdm_device_tb.vhd
  - ../../common/communications/source/spi_block.vhd
  - ../../common/communications/source/spi_pwm_device.vhd
  - ../../common/communications/source/spi_sdm_device.vhd
@@ -21,3 +22,4 @@ file_list:
  - ../../common/communications/sim/spi_block_tb.vhd
  - ../../common/communications/sim/spi_version_block_tb.vhd
  - ../../common/communications/sim/spi_pwm_device_tb.vhd
+ - ../../common/communications/sim/spi_sdm_device_tb.vhd

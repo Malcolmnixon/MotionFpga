@@ -1,6 +1,6 @@
 -------------------------------------------------------------------------------
 --! @file
---! @brief SPI PWM device testbench module
+--! @brief SPI SDM device testbench module
 -------------------------------------------------------------------------------
 
 --! Using IEEE library
@@ -9,12 +9,12 @@ LIBRARY ieee;
 --! Using IEEE standard logic components
 USE ieee.std_logic_1164.ALL;
 
---! @brief SPI PWM device testbench module
-ENTITY spi_pwm_device_tb IS
-END ENTITY spi_pwm_device_tb;
+--! @brief SPI SDM device testbench module
+ENTITY spi_sdm_device_tb IS
+END ENTITY spi_sdm_device_tb;
 
---! Architecture tb of spi_pwm_device_tb entity
-ARCHITECTURE tb OF spi_pwm_device_tb IS
+--! Architecture tb of spi_sdm_device_tb entity
+ARCHITECTURE tb OF spi_sdm_device_tb IS
 
     --! Clock period
     CONSTANT c_clk_period : time := 10 ns;
@@ -34,7 +34,7 @@ ARCHITECTURE tb OF spi_pwm_device_tb IS
         ver_en  : std_logic;                     --! Version enable line
         mosi    : std_logic_vector(31 DOWNTO 0); --! MOSI data
         miso    : std_logic_vector(31 DOWNTO 0); --! MISO data
-        percent : t_percent_array;               --! Expected PWM percentages
+        percent : t_percent_array;               --! Expected SDM percentages
     END RECORD t_stimulus;
 
     --! Stimulus array type
@@ -102,7 +102,7 @@ ARCHITECTURE tb OF spi_pwm_device_tb IS
     SIGNAL spi_mosi   : std_logic;                    --! SPI MOSI input to uut
     SIGNAL spi_miso   : std_logic;                    --! SPI MISO output from uut
     SIGNAL spi_ver_en : std_logic;                    --! SPI Version Enable input to uut
-    SIGNAL pwm_out    : std_logic_vector(3 DOWNTO 0); --! PWM outputs
+    SIGNAL sdm_out    : std_logic_vector(3 DOWNTO 0); --! SDM outputs
 
     -- Signals to spi_master
     SIGNAL spi_data_mosi  : std_logic_vector(31 DOWNTO 0); --! SPI data to send
@@ -133,8 +133,8 @@ ARCHITECTURE tb OF spi_pwm_device_tb IS
     
 BEGIN
 
-    --! Instantiate spi_pwm_device as unit under test
-    i_uut : ENTITY work.spi_pwm_device(rtl)
+    --! Instantiate spi_sdm_device as unit under test
+    i_uut : ENTITY work.spi_sdm_device(rtl)
         GENERIC MAP (
             ver_info => c_ver_info
         )
@@ -146,11 +146,10 @@ BEGIN
             spi_mosi_in     => spi_mosi,
             spi_miso_out    => spi_miso,
             spi_ver_en_in   => spi_ver_en,
-            pwm_adv_in      => '1',
-            pwm_out         => pwm_out
+            sdm_out         => sdm_out
         );
         
-    --! Instantiate sim_spi_master to drive spi_pwm_device
+    --! Instantiate sim_spi_master to drive spi_sdm_device
     i_spi_master : ENTITY work.sim_spi_master(sim)
         PORT MAP (
             mod_rst_in    => rst,
@@ -164,15 +163,15 @@ BEGIN
             xfer_done_out => spi_xfer_done
         );
     
-    --! Generate PWM percent measuring entities
+    --! Generate SDM percent measuring entities
     g_on_percent : FOR i IN 0 TO 3 GENERATE
         
-        --! Instantiate sim_on_percent for pwm output
+        --! Instantiate sim_on_percent for sdm output
         i_on_percent : ENTITY work.sim_on_percent(sim)
             PORT MAP (
                 mod_clk_in  => clk,
                 mod_rst_in  => on_rst,
-                signal_in   => pwm_out(i),
+                signal_in   => sdm_out(i),
                 percent_out => on_percent(i)
             );
     
@@ -227,21 +226,21 @@ BEGIN
                 to_string(spi_data_miso)
                 SEVERITY error;           
             
-            -- Enable PWM counting
+            -- Enable SDM counting
             on_rst <= '0';
             
             -- Wait for full service period
             WAIT FOR c_svc_period;
             
-            -- Inspect PWM outputs
+            -- Inspect SDM outputs
             FOR i IN 0 TO 3 LOOP   
 
-                -- Assert PWM is within 5%
+                -- Assert SDM is within 5%
                 ASSERT on_percent(i) >= c_stimulus(s).percent(i) - 5 AND 
                     on_percent(i) <= c_stimulus(s).percent(i)
-                    REPORT "PWM channel " & 
+                    REPORT "SDM channel " & 
                     integer'image(i) &
-                    " expected pwm of " &
+                    " expected sdm of " &
                     integer'image(c_stimulus(s).percent(i)) &
                     " but got " &
                     integer'image(on_percent(i))
@@ -249,7 +248,7 @@ BEGIN
 
             END LOOP;
             
-            -- Stop PWM counting
+            -- Stop SDM counting
             on_rst <= '1';
             
         END LOOP;

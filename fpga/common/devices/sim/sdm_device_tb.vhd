@@ -1,6 +1,6 @@
 -------------------------------------------------------------------------------
 --! @file
---! @brief PWM device test bench
+--! @brief SDM device test bench
 -------------------------------------------------------------------------------
 
 --! Using IEEE library
@@ -12,12 +12,12 @@ USE ieee.std_logic_1164.ALL;
 --! Using IEE standard numeric components
 USE ieee.numeric_std.ALL;
 
---! @brief PWM device test bench
-ENTITY pwm_device_tb IS
-END ENTITY pwm_device_tb;
+--! @brief SDM device test bench
+ENTITY sdm_device_tb IS
+END ENTITY sdm_device_tb;
 
---! Architecture tb of pwm_device_tb entity
-ARCHITECTURE tb OF pwm_device_tb IS
+--! Architecture tb of sdm_device_tb entity
+ARCHITECTURE tb OF sdm_device_tb IS
 
     --! Test bench clock period
     CONSTANT c_clk_period : time := 10 ns;
@@ -28,10 +28,10 @@ ARCHITECTURE tb OF pwm_device_tb IS
     --! Stimulus record type
     TYPE t_stimulus IS RECORD
         name    : string(1 TO 30);               --! Stimulus name
-        rst     : std_logic;                     --! Reset input to pwm_device
-        data_wr : std_logic_vector(31 DOWNTO 0); --! Write data to pwm_device
-        data_rd : std_logic_vector(31 DOWNTO 0); --! Expected read data from pwm_device
-        percent : t_percent_array;               --! Expected pwm percents
+        rst     : std_logic;                     --! Reset input to sdm_device
+        data_wr : std_logic_vector(31 DOWNTO 0); --! Write data to sdm_device
+        data_rd : std_logic_vector(31 DOWNTO 0); --! Expected read data from sdm_device
+        percent : t_percent_array;               --! Expected sdm percents
     END RECORD t_stimulus;
 
     --! Stimulus array type
@@ -90,7 +90,7 @@ ARCHITECTURE tb OF pwm_device_tb IS
     SIGNAL dat_wr_done : std_logic;                     --! Data write done input to uut
     SIGNAL dat_wr_reg  : std_logic_vector(31 DOWNTO 0); --! Data write register input to uut
     SIGNAL dat_rd_reg  : std_logic_vector(31 DOWNTO 0); --! Data read register output from uut
-    SIGNAL pwm_out     : std_logic_vector(3 DOWNTO 0);  --! PWM outputs from uut
+    SIGNAL sdm_out     : std_logic_vector(3 DOWNTO 0);  --! PWM outputs from uut
     
     -- Signals to on_percent
     SIGNAL on_rst     : std_logic;       --! Reset input to on_percent
@@ -115,16 +115,15 @@ ARCHITECTURE tb OF pwm_device_tb IS
 
 BEGIN
 
-    --! Instantiate PWM device as uut
-    i_uut : ENTITY work.pwm_device(rtl)
+    --! Instantiate SDM device as uut
+    i_uut : ENTITY work.sdm_device(rtl)
         PORT MAP (
             mod_clk_in     => clk,
             mod_rst_in     => rst,
             dat_wr_done_in => dat_wr_done,
             dat_wr_reg_in  => dat_wr_reg,
             dat_rd_reg_out => dat_rd_reg,
-            pwm_adv_in     => '1',
-            pwm_out        => pwm_out
+            sdm_out        => sdm_out
         );
 
     --! Generate on_percent measuring entities
@@ -135,7 +134,7 @@ BEGIN
             PORT MAP (
                 mod_clk_in  => clk,
                 mod_rst_in  => on_rst,
-                signal_in   => pwm_out(i),
+                signal_in   => sdm_out(i),
                 percent_out => on_percent(i)
             );
     
@@ -155,7 +154,7 @@ BEGIN
         
     END PROCESS pr_clock;
     
-    --! @brief Stimulus process to drive PWM unit under test
+    --! @brief Stimulus process to drive SDM unit under test
     pr_stimulus : PROCESS IS
     BEGIN
         
@@ -179,24 +178,24 @@ BEGIN
             WAIT FOR c_clk_period;
             dat_wr_done <= '0';
             
-            -- Wait for pwms to stabilize
+            -- Wait for sdms to stabilize
             WAIT FOR 256 * c_clk_period;
             
-            -- Enable pwm counting
+            -- Enable sdm counting
             on_rst <= '0';
             
             -- Accumuate 256*10 clocks 
             WAIT FOR 2560 * c_clk_period;
             
-            -- Assert pwm channels
+            -- Assert sdm channels
             FOR i IN 0 TO 3 LOOP
             
-                -- Assert pwm channel
+                -- Assert sdm channel
                 ASSERT on_percent(i) >= c_stimulus(s).percent(i) - 5 AND
                     on_percent(i) <= c_stimulus(s).percent(i) + 5
-                    REPORT "PWM channel " &
+                    REPORT "SDM channel " &
                     integer'image(i) &
-                    " expected pwm of " & 
+                    " expected sdm of " & 
                     integer'image(c_stimulus(s).percent(i)) &
                     " but got " & 
                     integer'image(on_percent(i))
