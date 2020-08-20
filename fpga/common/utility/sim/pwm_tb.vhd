@@ -19,78 +19,82 @@ END ENTITY pwm_tb;
 --! Architecture tb of pwm_tb entity
 ARCHITECTURE tb OF pwm_tb IS
 
+    --! Test bench clock period
+    CONSTANT c_clk_period : time := 10 ns;
+
     --! Stimulus record type
     TYPE t_stimulus IS RECORD
-        name : string(1 TO 20);          --! Stimulus name
-        rst  : std_logic_vector(0 TO 9); --! rst input to uut
-        adv  : std_logic_vector(0 TO 9); --! adv input to uut
-        duty : integer RANGE 0 TO 3;     --! duty input to uut
-        pwm  : std_logic_vector(0 TO 9); --! pwm expected from uut
+        name    : string(1 TO 20);      --! Stimulus name
+        rst     : std_logic;            --! rst input to uut
+        adv     : std_logic;            --! adv input to uut
+        duty    : integer RANGE 0 TO 3; --! duty input to uut
+        percent : integer;              --! Expected percent
     END RECORD t_stimulus;
 
     --! Stimulus array type
     TYPE t_stimulus_array IS ARRAY(natural RANGE <>) OF t_stimulus;
 
-    --! Test bench clock period
-    CONSTANT c_clk_period : time := 10 ns;
-
     --! Test stimulus
     CONSTANT c_stimulus : t_stimulus_array :=
     (
         (
-            name => "Hold in reset       ",
-            rst  => "1111111111",
-            adv  => "0000000000",
-            duty => 3,
-            pwm  => "0000000000"
+            name    => "Hold in reset       ",
+            rst     => '1',
+            adv     => '0',
+            duty    => 3,
+            percent => 0
         ),
         (
-            name => "Freeze              ",
-            rst  => "1000000000",
-            adv  => "0000000000",
-            duty => 3,
-            pwm  => "0000000000"
+            name    => "Freeze              ",
+            rst     => '0',
+            adv     => '0',
+            duty    => 3,
+            percent => 0
         ),
         (
-            name => "Running period 3    ",
-            rst  => "1000000000",
-            adv  => "1111111111",
-            duty => 3,
-            pwm  => "0111111111"
+            name    => "Running period 3    ",
+            rst     => '0',
+            adv     => '1',
+            duty    => 3,
+            percent => 100
         ),
         (
-            name => "Running period 2    ",
-            rst  => "1000000000",
-            adv  => "1111111111",
-            duty => 2,
-            pwm  => "0110110110"
+            name    => "Running period 2    ",
+            rst     => '0',
+            adv     => '1',
+            duty    => 2,
+            percent => 67
         ),
         (
-            name => "Running period 1    ",
-            rst  => "1000000000",
-            adv  => "1111111111",
-            duty => 1,
-            pwm  => "0100100100"
+            name    => "Running period 1    ",
+            rst     => '0',
+            adv     => '1',
+            duty    => 1,
+            percent => 33
         ),
         (
-            name => "Running period 0    ",
-            rst  => "1000000000",
-            adv  => "1111111111",
-            duty => 0,
-            pwm  => "0000000000"
+            name    => "Running period 0    ",
+            rst     => '0',
+            adv     => '1',
+            duty    => 0,
+            percent => 0
         )
     );
 
-    -- Signals to unit under test
-    SIGNAL clk  : std_logic;            --! Clock input to pwm unit under test
-    SIGNAL rst  : std_logic;            --! Reset input to pwm unit under test
-    SIGNAL adv  : std_logic;            --! PWM advance input to pwm unit under test
-    SIGNAL duty : integer RANGE 0 TO 3; --! Duty-cycle input to pwm unit under test
-    SIGNAL pwm  : std_logic;            --! PWM output from pwm unit under test
+    -- Signals to uut
+    SIGNAL clk  : std_logic;            --! Clock input to pwm uut
+    SIGNAL rst  : std_logic;            --! Reset input to pwm uut
+    SIGNAL adv  : std_logic;            --! PWM advance input to pwm uut
+    SIGNAL duty : integer RANGE 0 TO 3; --! Duty-cycle input to pwm uut
+    SIGNAL pwm  : std_logic;            --! PWM output from pwm uut
+    
+    -- Signals to on_percent
+    SIGNAL on_rst     : std_logic; --! Reset input to on_percent
+    SIGNAL on_percent : integer;   --! Percent output from on_percent
 
 BEGIN
 
-    --! Instantiate PWM as unit under test
+    --! Instantiate PWM as uut
     i_uut : ENTITY work.pwm(rtl)
         GENERIC MAP (
             count_max => 2
@@ -101,6 +105,15 @@ BEGIN
             pwm_adv_in  => adv,
             pwm_duty_in => duty,
             pwm_out     => pwm
+        );
+        
+    --! Instantiate on_percent
+    i_on_percent : ENTITY work.sim_on_percent(sim)
+        PORT MAP (
+            mod_clk_in  => clk,
+            mod_rst_in  => on_rst,
+            signal_in   => pwm,
+            percent_out => on_percent
         );
 
     --! @brief Clock generation process
@@ -122,9 +135,10 @@ BEGIN
     BEGIN
 
         -- Initialize entity inputs
-        rst  <= '1';
-        adv  <= '0';
-        duty <= 0;
+        rst    <= '1';
+        adv    <= '0';
+        duty   <= 0;
+        on_rst <= '1';
         WAIT FOR c_clk_period;
 
         -- Loop over stimulus
@@ -132,26 +146,29 @@ BEGIN
             -- Log start of stimulus
             REPORT "Starting: " & c_stimulus(s).name SEVERITY note;
 
-            -- Set duty for this stimulus
+            -- Set stimulus inputs
             duty <= c_stimulus(s).duty;
+            adv  <= c_stimulus(s).adv;
+            rst  <= c_stimulus(s).rst;
 
-            -- Loop for test stimulus
-            FOR t IN 0 TO 9 LOOP
-                -- Set inputs then wait for clock to rise
-                adv <= c_stimulus(s).adv(t);
-                rst <= c_stimulus(s).rst(t);
-                WAIT UNTIL clk = '1';
+            -- Wait for pwm to stabilize
+            WAIT FOR 10 * c_clk_period;
+            
+            -- Enable pwm counting
+            on_rst <= '0';
+            
+            -- Accumuate 100 clocks 
+            WAIT FOR 100 * c_clk_period;
+            
+            -- Assert outputs
+            ASSERT on_percent >= c_stimulus(s).percent - 5 AND
+                on_percent <= c_stimulus(s).percent + 5
+                REPORT "Expected pwm of " & integer'image(c_stimulus(s).percent)
+                & " but got " & integer'image(on_percent)
+                SEVERITY error;
 
-                -- Wait for clk to fall
-                WAIT UNTIL clk = '0';
-
-                -- Assert outputs
-                ASSERT pwm = c_stimulus(s).pwm(t)
-                    REPORT "At time " & integer'image(t)
-                    & " expected " & std_logic'image(c_stimulus(s).pwm(t))
-                    & " but got " & std_logic'image(pwm)
-                    SEVERITY error;
-            END LOOP;
+            -- Stop pwm counting
+            on_rst <= '1';
         END LOOP;
 
         -- Log end of test

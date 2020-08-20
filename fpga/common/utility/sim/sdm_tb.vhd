@@ -19,60 +19,64 @@ END ENTITY sdm_tb;
 --! Architecture tb of sdm_tb entity
 ARCHITECTURE tb OF sdm_tb IS
 
+    --! Test bench clock period
+    CONSTANT c_clk_period : time := 10 ns;
+
     --! Stimulus record type
     TYPE t_stimulus IS RECORD
-        name      : string(1 TO 20);           --! Stimulus name
-        rst       : std_logic_vector(0 TO 12); --! rst input to uut
-        sdm_level : unsigned(1 DOWNTO 0);      --! sdm_level input to uut
-        sdm_out   : std_logic_vector(0 TO 12); --! sdm_out expected from uut
+        name      : string(1 TO 20);      --! Stimulus name
+        rst       : std_logic;            --! rst input to uut
+        sdm_level : unsigned(1 DOWNTO 0); --! sdm_level input to uut
+        percent   : integer;              --! Expected on-percent from uut
     END RECORD t_stimulus;
 
     --! Stimulus array type
     TYPE t_stimulus_array IS ARRAY(natural RANGE <>) OF t_stimulus;
-
-    --! Test bench clock period
-    CONSTANT c_clk_period : time := 10 ns;
 
     --! Test stimulus
     CONSTANT c_stimulus : t_stimulus_array :=
     (
         (
             name      => "Hold in reset       ",
-            rst       => "1111111111111",
+            rst       => '1',
             sdm_level => B"11",
-            sdm_out   => "0000000000000"
+            percent   => 0
         ),
         (
             name      => "Running value 0     ",
-            rst       => "1000000000000",
+            rst       => '0',
             sdm_level => B"00",
-            sdm_out   => "0000000000000"
+            percent   => 0
         ),
         (
             name      => "Running value 1     ",
-            rst       => "1000000000000",
+            rst       => '0',
             sdm_level => B"01",
-            sdm_out   => "0000100010001"
+            percent   => 25
         ),
         (
             name      => "Running value 2     ",
-            rst       => "1000000000000",
+            rst       => '0',
             sdm_level => B"10",
-            sdm_out   => "0010101010101"
+            percent   => 50
         ),
         (
             name      => "Running value 3     ",
-            rst       => "1000000000000",
+            rst       => '0',
             sdm_level => B"11",
-            sdm_out   => "0011101110111"
+            percent   => 75
         )
     );
 
-    -- Signals to unit under test
-    SIGNAL clk       : std_logic;            --! Clock input to unit under test
-    SIGNAL rst       : std_logic;            --! Reset input to unit under test
-    SIGNAL sdm_level : unsigned(1 DOWNTO 0); --! Level input to unit under test
-    SIGNAL sdm_out   : std_logic;            --! Modulator output from unit under test
+    -- Signals to uut
+    SIGNAL clk       : std_logic;            --! Clock input to sdm uut
+    SIGNAL rst       : std_logic;            --! Reset input to sdm uut
+    SIGNAL sdm_level : unsigned(1 DOWNTO 0); --! Level input to sdm uut
+    SIGNAL sdm_out   : std_logic;            --! Modulator output from sdm uut
+    
+    -- Signals to on_percent
+    SIGNAL on_rst     : std_logic; --! Reset input to on_percent
+    SIGNAL on_percent : integer;   --! Percent output from on_percent
 
 BEGIN
 
@@ -86,6 +90,15 @@ BEGIN
             mod_rst_in   => rst,
             sdm_level_in => sdm_level,
             sdm_out      => sdm_out
+        );
+
+    --! Instantiate on_percent
+    i_on_percent : ENTITY work.sim_on_percent(sim)
+        PORT MAP (
+            mod_clk_in  => clk,
+            mod_rst_in  => on_rst,
+            signal_in   => sdm_out,
+            percent_out => on_percent
         );
 
     --! @brief Clock generation process
@@ -109,31 +122,36 @@ BEGIN
         -- Initialize entity inputs
         rst       <= '1';
         sdm_level <= (OTHERS => '0');
+        on_rst    <= '1';
+        WAIT FOR c_clk_period;
         
         -- Loop over stimulus
         FOR s IN c_stimulus'range LOOP
             -- Log start of stimulus
             REPORT "Starting: " & c_stimulus(s).name SEVERITY note;
 
-            -- Set level for this stimulus
+            -- Set stimulus inputs
             sdm_level <= c_stimulus(s).sdm_level;
+            rst       <= c_stimulus(s).rst;
 
-            -- Loop for test stimulus
-            FOR t IN 0 TO 9 LOOP
-                -- Set inputs then wait for clock to rise
-                rst <= c_stimulus(s).rst(t);
-                WAIT UNTIL clk = '1';
+            -- Wait for sdm to stabilize
+            WAIT FOR 10 * c_clk_period;
+            
+            -- Enable sdm counting
+            on_rst <= '0';
+            
+            -- Accumuate 100 clocks 
+            WAIT FOR 100 * c_clk_period;
+            
+            -- Assert outputs
+            ASSERT on_percent >= c_stimulus(s).percent - 5 AND
+                on_percent <= c_stimulus(s).percent + 5
+                REPORT "Expected sdm of " & integer'image(c_stimulus(s).percent)
+                & " but got " & integer'image(on_percent)
+                SEVERITY error;
 
-                -- Wait for clk to fall
-                WAIT UNTIL clk = '0';
-
-                -- Assert outputs
-                ASSERT sdm_out = c_stimulus(s).sdm_out(t)
-                    REPORT "At time " & integer'image(t)
-                    & " expected " & std_logic'image(c_stimulus(s).sdm_out(t))
-                    & " but got " & std_logic'image(sdm_out)
-                    SEVERITY error;
-            END LOOP;
+            -- Stop sdm counting
+            on_rst <= '1';
         END LOOP;
 
         -- Log end of test

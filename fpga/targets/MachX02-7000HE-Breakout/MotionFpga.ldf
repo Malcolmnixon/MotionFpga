@@ -62,6 +62,9 @@
         <Source name="../../common/devices/sim/pwm_device_tb.vhd" type="VHDL" type_short="VHDL" syn_sim="SimOnly">
             <Options/>
         </Source>
+        <Source name="../../common/devices/sim/sdm_device_tb.vhd" type="VHDL" type_short="VHDL" syn_sim="SimOnly">
+            <Options/>
+        </Source>
         <Source name="../../common/communications/sim/sim_spi_master.vhd" type="VHDL" type_short="VHDL" syn_sim="SimOnly">
             <Options/>
         </Source>
@@ -72,6 +75,9 @@
             <Options/>
         </Source>
         <Source name="../../common/communications/sim/spi_pwm_device_tb.vhd" type="VHDL" type_short="VHDL" syn_sim="SimOnly">
+            <Options/>
+        </Source>
+        <Source name="../../common/communications/sim/spi_sdm_device_tb.vhd" type="VHDL" type_short="VHDL" syn_sim="SimOnly">
             <Options/>
         </Source>
         <Source name="impl1/impl1.xcf" type="Programming Project File" type_short="Programming">
