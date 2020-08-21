@@ -5,6 +5,7 @@ files:
  - utility/source/edge_detect.vhd
  - utility/source/pwm.vhd
  - utility/source/sdm.vhd
+ - utility/source/quad_decoder.vhd
  - devices/source/pwm_device.vhd
  - devices/source/sdm_device.vhd
  - communications/source/spi_block.vhd
@@ -18,6 +19,7 @@ files:
  - utility/sim/edge_detect_tb.vhd
  - utility/sim/pwm_tb.vhd
  - utility/sim/sdm_tb.vhd
+ - utility/sim/quad_decoder_tb.vhd
  - devices/sim/pwm_device_tb.vhd
  - devices/sim/sdm_device_tb.vhd
  - communications/sim/sim_spi_master.vhd
@@ -32,6 +34,7 @@ tests:
  - edge_detect_tb
  - pwm_tb
  - sdm_tb
+ - quad_decoder_tb
  - pwm_device_tb
  - sdm_device_tb
  - spi_block_tb
