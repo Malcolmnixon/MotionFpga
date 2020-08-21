@@ -5,11 +5,13 @@ file_list:
  - ../../common/utility/source/edge_detect.vhd
  - ../../common/utility/source/pwm.vhd
  - ../../common/utility/source/sdm.vhd
+ - ../../common/utility/source/quad_decoder.vhd
  - ../../common/utility/sim/sim_on_percent.vhd
  - ../../common/utility/sim/clk_div_n_tb.vhd
  - ../../common/utility/sim/edge_detect_tb.vhd
  - ../../common/utility/sim/pwm_tb.vhd
  - ../../common/utility/sim/sdm_tb.vhd
+ - ../../common/utility/sim/quad_decoder_tb.vhd
  - ../../common/devices/source/pwm_device.vhd
  - ../../common/devices/source/sdm_device.vhd
  - ../../common/devices/sim/pwm_device_tb.vhd
