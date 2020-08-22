@@ -21,6 +21,8 @@
     <Source worklib="work" path="../../common/utility/sim/quad_decoder_tb.vhd" type="VHDL" include="none"/>
     <Source worklib="work" path="../../common/utility/source/delay_line.vhd" type="VHDL" include="none"/>
     <Source worklib="work" path="../../common/utility/sim/delay_line_tb.vhd" type="VHDL" include="none"/>
+    <Source worklib="work" path="../../common/utility/source/level_filter.vhd" type="VHDL" include="none"/>
+    <Source worklib="work" path="../../common/utility/sim/level_filter_tb.vhd" type="VHDL" include="none"/>
     <Source worklib="work" path="../../common/devices/sim/pwm_device_tb.vhd" type="VHDL" include="none"/>
     <Source worklib="work" path="../../common/devices/sim/sdm_device_tb.vhd" type="VHDL" include="none"/>
     <Source worklib="work" path="../../common/communications/sim/spi_block_tb.vhd" type="VHDL" include="none"/>
