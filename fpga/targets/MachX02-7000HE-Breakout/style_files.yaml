@@ -7,6 +7,7 @@ file_list:
  - ../../common/utility/source/sdm.vhd
  - ../../common/utility/source/quad_decoder.vhd
  - ../../common/utility/source/delay_line.vhd
+ - ../../common/utility/source/level_filter.vhd
  - ../../common/utility/sim/sim_on_percent.vhd
  - ../../common/utility/sim/clk_div_n_tb.vhd
  - ../../common/utility/sim/edge_detect_tb.vhd
@@ -14,6 +15,7 @@ file_list:
  - ../../common/utility/sim/sdm_tb.vhd
  - ../../common/utility/sim/quad_decoder_tb.vhd
  - ../../common/utility/sim/delay_line_tb.vhd
+ - ../../common/utility/sim/level_filter_tb.vhd
  - ../../common/devices/source/pwm_device.vhd
  - ../../common/devices/source/sdm_device.vhd
  - ../../common/devices/sim/pwm_device_tb.vhd
