@@ -26,6 +26,9 @@
         <Source name="../../common/utility/source/quad_decoder.vhd" type="VHDL" type_short="VHDL">
             <Options/>
         </Source>
+        <Source name="../../common/utility/source/delay_line.vhd" type="VHDL" type_short="VHDL">
+            <Options/>
+        </Source>
         <Source name="../../common/devices/source/pwm_device.vhd" type="VHDL" type_short="VHDL">
             <Options/>
         </Source>
@@ -63,6 +66,9 @@
             <Options/>
         </Source>
         <Source name="../../common/utility/sim/quad_decoder_tb.vhd" type="VHDL" type_short="VHDL" syn_sim="SimOnly">
+            <Options/>
+        </Source>
+        <Source name="../../common/utility/sim/delay_line_tb.vhd" type="VHDL" type_short="VHDL" syn_sim="SimOnly">
             <Options/>
         </Source>
         <Source name="../../common/devices/sim/pwm_device_tb.vhd" type="VHDL" type_short="VHDL" syn_sim="SimOnly">
