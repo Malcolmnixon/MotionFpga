@@ -97,13 +97,14 @@ BEGIN
     --! Instantiate the clock divider for PWM advance    
     i_pwm_clk : ENTITY work.clk_div_n(rtl)
         GENERIC MAP (
-            divide => 4
+            clk_div => 4
         )
         PORT MAP (
-            mod_clk_in => clk,
-            mod_rst_in => rst,
-            cnt_en_in  => '1',
-            cnt_out    => pwm_adv
+            mod_clk_in  => clk,
+            mod_rst_in  => rst,
+            clk_adv_in  => '1',
+            clk_end_out => OPEN,
+            clk_pls_out => pwm_adv
         );
         
     --! Instantiate the PWM device

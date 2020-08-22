@@ -14,19 +14,18 @@ USE ieee.numeric_std.ALL;
 
 --! @brief Clock divider entity
 --!
---! @image html clk_div_n_entity.png "Clock Divider Entity"
---!
 --! This clock divider takes an input clock and divides it by an integer
 --! value.
 ENTITY clk_div_n IS
     GENERIC (
-        divide : integer RANGE 1 TO integer'high := 4 --! Divider amount
+        clk_div : integer RANGE 1 TO integer'high := 4 --! Divider amount
     );
     PORT (
-        mod_clk_in : IN    std_logic; --! Module clock
-        mod_rst_in : IN    std_logic; --! Module reset (async)
-        cnt_en_in  : IN    std_logic; --! Count enable
-        cnt_out    : OUT   std_logic  --! Count output
+        mod_clk_in  : IN    std_logic; --! Module clock
+        mod_rst_in  : IN    std_logic; --! Module reset (async)
+        clk_adv_in  : IN    std_logic; --! Clock advance flag
+        clk_end_out : OUT   std_logic; --! Clock end flag
+        clk_pls_out : OUT   std_logic  --! Clock pulse flag
     );
 END ENTITY clk_div_n;
 
@@ -34,7 +33,7 @@ END ENTITY clk_div_n;
 ARCHITECTURE rtl OF clk_div_n IS
 
     --! Clock counter
-    SIGNAL count : integer RANGE 0 TO divide - 1;
+    SIGNAL count : integer RANGE 0 TO clk_div - 1;
     
 BEGIN
 
@@ -45,15 +44,26 @@ BEGIN
     BEGIN
         
         IF (mod_rst_in = '1') THEN
-            count   <= 0;
-            cnt_out <= '0';
-        ELSIF (rising_edge(mod_clk_in) AND cnt_en_in = '1') THEN
-            IF (count = divide - 1) THEN
-                count   <= 0;
-                cnt_out <= '1';
-            ELSE
-                count   <= count + 1;
-                cnt_out <= '0';
+            -- Reset
+            count       <= 0;
+            clk_end_out <= '0';
+            clk_pls_out <= '0';
+        ELSIF (rising_edge(mod_clk_in)) THEN
+            -- Default pulse to low
+            clk_pls_out <= '0';
+            
+            -- Handle conditional advance
+            IF (clk_adv_in = '1') THEN
+                IF (count = clk_div - 1) THEN
+                    -- Handle roll-over
+                    count       <= 0;
+                    clk_end_out <= '1';
+                    clk_pls_out <= '1';
+                ELSE
+                    -- Handle normal advance
+                    count       <= count + 1;
+                    clk_end_out <= '0';
+                END IF;
             END IF;
         END IF;
         
