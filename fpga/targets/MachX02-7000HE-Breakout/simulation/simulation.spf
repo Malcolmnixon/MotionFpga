@@ -1,5 +1,6 @@
 <BaliSimProject version="1.3" path="." stage="0" language="-1" name="simulation" simType="Active-HDL">
     <Source worklib="work" path="../../common/utility/source/blink.vhd" type="VHDL" include="none"/>
+    <Source worklib="work" path="../../common/devices/source/gpio_device.vhd" type="VHDL" include="none"/>
     <Source worklib="work" path="../../common/utility/source/sdm.vhd" type="VHDL" include="none"/>
     <Source worklib="work" path="../../common/devices/source/sdm_device.vhd" type="VHDL" include="none"/>
     <Source worklib="work" path="../../common/utility/source/edge_detect.vhd" type="VHDL" include="none"/>
@@ -30,6 +31,7 @@
     <Source worklib="work" path="../../common/communications/sim/sim_spi_master.vhd" type="VHDL" include="none"/>
     <Source worklib="work" path="../../common/communications/sim/spi_pwm_device_tb.vhd" type="VHDL" include="none"/>
     <Source worklib="work" path="../../common/communications/sim/spi_sdm_device_tb.vhd" type="VHDL" include="none"/>
+    <Source worklib="work" path="../../common/devices/sim/gpio_device_tb.vhd" type="VHDL" include="none"/>
     <SimLib value="pmi_work ovi_machxo2"/>
     <GlbInc value=""/>
     <Macro value=""/>
