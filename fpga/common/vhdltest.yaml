@@ -10,6 +10,7 @@ files:
  - utility/source/level_filter.vhd
  - devices/source/pwm_device.vhd
  - devices/source/sdm_device.vhd
+ - devices/source/gpio_device.vhd
  - communications/source/spi_block.vhd
  - communications/source/spi_version_block.vhd
  - communications/source/spi_pwm_device.vhd
@@ -26,6 +27,7 @@ files:
  - utility/sim/level_filter_tb.vhd
  - devices/sim/pwm_device_tb.vhd
  - devices/sim/sdm_device_tb.vhd
+ - devices/sim/gpio_device_tb.vhd
  - communications/sim/sim_spi_master.vhd
  - communications/sim/spi_block_tb.vhd
  - communications/sim/spi_version_block_tb.vhd
@@ -43,6 +45,7 @@ tests:
  - level_filter_tb
  - pwm_device_tb
  - sdm_device_tb
+ - gpio_device_tb
  - spi_block_tb
  - spi_version_block_tb
  - spi_pwm_device_tb

@@ -18,8 +18,10 @@ file_list:
  - ../../common/utility/sim/level_filter_tb.vhd
  - ../../common/devices/source/pwm_device.vhd
  - ../../common/devices/source/sdm_device.vhd
+ - ../../common/devices/source/gpio_device.vhd
  - ../../common/devices/sim/pwm_device_tb.vhd
  - ../../common/devices/sim/sdm_device_tb.vhd
+ - ../../common/devices/sim/gpio_device_tb.vhd
  - ../../common/communications/source/spi_block.vhd
  - ../../common/communications/source/spi_pwm_device.vhd
  - ../../common/communications/source/spi_sdm_device.vhd
