@@ -24,22 +24,25 @@ USE ieee.numeric_std.ALL;
 --! pwm_duty of 'count_max + 1' causes the pwm to stay high all the time.
 ENTITY pwm IS
     GENERIC (
-        count_max : integer := 254 --! PWM count maximum
+        bit_width : natural RANGE 2 TO 32 := 8 --! PWM width
     );
     PORT (
-        mod_clk_in  : IN    std_logic;                        --! Clock
-        mod_rst_in  : IN    std_logic;                        --! Reset (async)
-        pwm_adv_in  : IN    std_logic;                        --! PWM Advance flag
-        pwm_duty_in : IN    integer RANGE 0 TO count_max + 1; --! PWM duty cycle
-        pwm_out     : OUT   std_logic                         --! PWM output
+        mod_clk_in  : IN    std_logic;                                --! Clock
+        mod_rst_in  : IN    std_logic;                                --! Reset (async)
+        pwm_adv_in  : IN    std_logic;                                --! PWM Advance flag
+        pwm_duty_in : IN    std_logic_vector(bit_width - 1 DOWNTO 0); --! PWM duty cycle
+        pwm_out     : OUT   std_logic                                 --! PWM output
     );
 END ENTITY pwm;
 
 --! Architecture rtl of pwm entity
 ARCHITECTURE rtl OF pwm IS
 
+    --! Maximum PWM count
+    CONSTANT c_count_max : natural := (2 ** bit_width) - 2;
+
     --! PWM count
-    SIGNAL count : integer RANGE 0 TO count_max;
+    SIGNAL count : unsigned(pwm_duty_in'range);
     
     --! PWM state
     SIGNAL state : std_logic;
@@ -52,19 +55,19 @@ BEGIN
     
         IF (mod_rst_in = '1') THEN
             -- Reset state
-            count <= 0;
+            count <= (OTHERS => '0');
             state <= '0';
         ELSIF (rising_edge(mod_clk_in) AND pwm_adv_in = '1') THEN
             -- Drive state
-            IF (count < integer(pwm_duty_in)) THEN
+            IF (count < unsigned(pwm_duty_in)) THEN
                 state <= '1';
             ELSE
                 state <= '0';
             END IF;
             
             -- Increment count
-            IF (count = count_max) THEN
-                count <= 0;
+            IF (count = c_count_max) THEN
+                count <= (OTHERS => '0');
             ELSE
                 count <= count + 1;
             END IF;			

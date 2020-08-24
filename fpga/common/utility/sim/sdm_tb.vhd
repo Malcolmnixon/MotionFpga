@@ -24,10 +24,10 @@ ARCHITECTURE tb OF sdm_tb IS
 
     --! Stimulus record type
     TYPE t_stimulus IS RECORD
-        name      : string(1 TO 20);      --! Stimulus name
-        rst       : std_logic;            --! rst input to uut
-        sdm_level : unsigned(1 DOWNTO 0); --! sdm_level input to uut
-        percent   : integer;              --! Expected on-percent from uut
+        name      : string(1 TO 20);              --! Stimulus name
+        rst       : std_logic;                    --! rst input to uut
+        sdm_level : std_logic_vector(1 DOWNTO 0); --! sdm_level input to uut
+        percent   : integer;                      --! Expected on-percent from uut
     END RECORD t_stimulus;
 
     --! Stimulus array type
@@ -69,10 +69,10 @@ ARCHITECTURE tb OF sdm_tb IS
     );
 
     -- Signals to uut
-    SIGNAL clk       : std_logic;            --! Clock input to sdm uut
-    SIGNAL rst       : std_logic;            --! Reset input to sdm uut
-    SIGNAL sdm_level : unsigned(1 DOWNTO 0); --! Level input to sdm uut
-    SIGNAL sdm_out   : std_logic;            --! Modulator output from sdm uut
+    SIGNAL clk       : std_logic;                    --! Clock input to sdm uut
+    SIGNAL rst       : std_logic;                    --! Reset input to sdm uut
+    SIGNAL sdm_level : std_logic_vector(1 DOWNTO 0); --! Level input to sdm uut
+    SIGNAL sdm_out   : std_logic;                    --! Modulator output from sdm uut
     
     -- Signals to on_percent
     SIGNAL on_rst     : std_logic; --! Reset input to on_percent

@@ -35,7 +35,7 @@ END ENTITY pwm_device;
 ARCHITECTURE rtl OF pwm_device IS
 
     --! Array type of four duty-cycles
-    TYPE pwm_duty_set IS ARRAY (3 DOWNTO 0) OF integer RANGE 0 TO 255;
+    TYPE pwm_duty_set IS ARRAY (3 DOWNTO 0) OF std_logic_vector(7 DOWNTO 0);
     
     --! Duty cycles array
     SIGNAL pwm_duty : pwm_duty_set;
@@ -48,7 +48,7 @@ BEGIN
         --! Generate PWM instance
         i_pwm : ENTITY work.pwm(rtl)
             GENERIC MAP (
-                count_max => 254
+                bit_width => 8
             )
             PORT MAP (
                 mod_clk_in  => mod_clk_in,
@@ -66,16 +66,16 @@ BEGIN
         
         IF (mod_rst_in = '1') THEN
             -- Reset duty cycles
-            pwm_duty(3) <= 0;
-            pwm_duty(2) <= 0;
-            pwm_duty(1) <= 0;
-            pwm_duty(0) <= 0;
+            pwm_duty(3) <= (OTHERS => '0');
+            pwm_duty(2) <= (OTHERS => '0');
+            pwm_duty(1) <= (OTHERS => '0');
+            pwm_duty(0) <= (OTHERS => '0');
         ELSIF (rising_edge(mod_clk_in) AND dat_wr_done_in = '1') THEN
             -- Set duty cycles from write register
-            pwm_duty(3) <= to_integer(unsigned(dat_wr_reg_in(31 DOWNTO 24)));
-            pwm_duty(2) <= to_integer(unsigned(dat_wr_reg_in(23 DOWNTO 16)));
-            pwm_duty(1) <= to_integer(unsigned(dat_wr_reg_in(15 DOWNTO 8)));
-            pwm_duty(0) <= to_integer(unsigned(dat_wr_reg_in(7 DOWNTO 0)));
+            pwm_duty(3) <= dat_wr_reg_in(31 DOWNTO 24);
+            pwm_duty(2) <= dat_wr_reg_in(23 DOWNTO 16);
+            pwm_duty(1) <= dat_wr_reg_in(15 DOWNTO 8);
+            pwm_duty(0) <= dat_wr_reg_in(7 DOWNTO 0);
         END IF;
         
     END PROCESS pr_write;
@@ -86,10 +86,10 @@ BEGIN
     
         IF (rising_edge(mod_clk_in)) THEN
             -- Populate read register with duty cycles
-            dat_rd_reg_out <= std_logic_vector(to_unsigned(pwm_duty(3), 8)) &
-                              std_logic_vector(to_unsigned(pwm_duty(2), 8)) &
-                              std_logic_vector(to_unsigned(pwm_duty(1), 8)) &
-                              std_logic_vector(to_unsigned(pwm_duty(0), 8));
+            dat_rd_reg_out <= pwm_duty(3) &
+                              pwm_duty(2) &
+                              pwm_duty(1) &
+                              pwm_duty(0);
         END IF;
         
     END PROCESS pr_read;

@@ -18,13 +18,13 @@ USE ieee.numeric_std.ALL;
 --! a configurable bit-width.
 ENTITY sdm IS
     GENERIC (
-        bit_width : integer RANGE 1 TO 31 := 8 --! Bit width
+        bit_width : integer RANGE 1 TO 32 := 8 --! Bit width
     );
     PORT (
-        mod_clk_in   : IN    std_logic;                        --! Clock
-        mod_rst_in   : IN    std_logic;                        --! Reset (async)
-        sdm_level_in : IN    unsigned(bit_width - 1 DOWNTO 0); --! Modulator level
-        sdm_out      : OUT   std_logic                         --! Modulator output
+        mod_clk_in   : IN    std_logic;                                --! Clock
+        mod_rst_in   : IN    std_logic;                                --! Reset (async)
+        sdm_level_in : IN    std_logic_vector(bit_width - 1 DOWNTO 0); --! Modulator level
+        sdm_out      : OUT   std_logic                                 --! Modulator output
     );
 END ENTITY sdm;
 
@@ -45,7 +45,7 @@ BEGIN
             accumulator <= (OTHERS => '0');
         ELSIF (rising_edge(mod_clk_in)) THEN
             -- Accumulate
-            accumulator <= ('0' & accumulator(accumulator'HIGH - 1 DOWNTO 0)) + ('0' & sdm_level_in);
+            accumulator <= unsigned('0' & accumulator(accumulator'HIGH - 1 DOWNTO 0)) + unsigned('0' & sdm_level_in);
         END IF;
             
     END PROCESS pr_sdm;
