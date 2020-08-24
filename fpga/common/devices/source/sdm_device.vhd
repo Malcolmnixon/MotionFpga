@@ -32,7 +32,7 @@ END ENTITY sdm_device;
 ARCHITECTURE rtl OF sdm_device IS
 
     --! Array type of four levels
-    TYPE sdm_level_set IS ARRAY (3 DOWNTO 0) OF unsigned(7 DOWNTO 0);
+    TYPE sdm_level_set IS ARRAY (3 DOWNTO 0) OF std_logic_vector(7 DOWNTO 0);
     
     --! Levels array
     SIGNAL sdm_level : sdm_level_set;
@@ -68,10 +68,10 @@ BEGIN
             sdm_level(0) <= (OTHERS => '0');
         ELSIF (rising_edge(mod_clk_in) AND dat_wr_done_in = '1') THEN
             -- Set levels from write register
-            sdm_level(3) <= unsigned(dat_wr_reg_in(31 DOWNTO 24));
-            sdm_level(2) <= unsigned(dat_wr_reg_in(23 DOWNTO 16));
-            sdm_level(1) <= unsigned(dat_wr_reg_in(15 DOWNTO 8));
-            sdm_level(0) <= unsigned(dat_wr_reg_in(7 DOWNTO 0));
+            sdm_level(3) <= dat_wr_reg_in(31 DOWNTO 24);
+            sdm_level(2) <= dat_wr_reg_in(23 DOWNTO 16);
+            sdm_level(1) <= dat_wr_reg_in(15 DOWNTO 8);
+            sdm_level(0) <= dat_wr_reg_in(7 DOWNTO 0);
         END IF;
         
     END PROCESS pr_write;
