@@ -26,8 +26,11 @@ END ENTITY edge_detect;
 --! Architecture rtl of edge_detect entity
 ARCHITECTURE rtl OF edge_detect IS
 
+    --! Previous input valid signal
+    SIGNAL prev_ok : std_logic;
+    
     --! Previous input signal
-    SIGNAL sig_prev : std_logic;
+    SIGNAL prev : std_logic;
     
 BEGIN
 
@@ -37,26 +40,30 @@ BEGIN
         
         IF (mod_rst_in = '1') THEN
             -- Aynchronous reset
-            sig_prev <= sig_in;
+            prev_ok  <= '0';
+            prev     <= '0';
             rise_out <= '0';
             fall_out <= '0';
         ELSIF (rising_edge(mod_clk_in)) THEN
-            -- Detect rising edge
-            IF (sig_in = '1' AND sig_prev = '0') THEN
-                rise_out <= '1';
-            ELSE
-                rise_out <= '0';
-            END IF;
-            
-            -- Detect falling edge
-            IF (sig_in = '0' AND sig_prev = '1') THEN
-                fall_out <= '1';
-            ELSE
-                fall_out <= '0';
+            IF (prev_ok = '1') THEN
+                -- Detect rising edge
+                IF (sig_in = '1' AND prev = '0') THEN
+                    rise_out <= '1';
+                ELSE
+                    rise_out <= '0';
+                END IF;
+                
+                -- Detect falling edge
+                IF (sig_in = '0' AND prev = '1') THEN
+                    fall_out <= '1';
+                ELSE
+                    fall_out <= '0';
+                END IF;
             END IF;
             
             -- Save previous sig_in
-            sig_prev <= sig_in;
+            prev    <= sig_in;
+            prev_ok <= '1';
         END IF;
         
     END PROCESS pr_detect;

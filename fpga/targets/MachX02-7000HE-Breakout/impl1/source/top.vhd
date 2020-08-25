@@ -29,7 +29,7 @@ ARCHITECTURE rtl OF top IS
     CONSTANT ver_info : std_logic_vector(31 DOWNTO 0) := X"00000000";
 
     SIGNAL osc           : std_logic; --! Internal oscillator (11.08MHz)
-    SIGNAL lock          : std_logic; --! PLL Lock 
+    SIGNAL lock          : std_logic; --! PLL Lock
     SIGNAL clk           : std_logic; --! Main clock (99.72MHz)
     SIGNAL rst_ms        : std_logic; --! Reset (possibly metastable)
     SIGNAL rst           : std_logic; --! Reset
@@ -42,22 +42,27 @@ ARCHITECTURE rtl OF top IS
     SIGNAL spi_mosi_s    : std_logic; --! SPI MOSI input (stable)
     SIGNAL spi_ver_en_s  : std_logic; --! SPI Version Enable input (stable)
     SIGNAL pwm_adv       : std_logic; --! PWM advance signal
-    
+
     -- PWM lines
-    SIGNAL pwm_lines : std_logic_vector(3 DOWNTO 0);
-    
+    SIGNAL pwm_lines : std_logic_vector(3 DOWNTO 0); --! PWM outputs
+
     -- SDM lines
-    SIGNAL sdm_lines : std_logic_vector(3 DOWNTO 0);
-    
-    -- Link (miso of block 0 to mosi of block 1)
-    SIGNAL block_link : std_logic;
+    SIGNAL sdm_lines : std_logic_vector(3 DOWNTO 0); --! SDM outputs
+
+    -- GPIO lines
+    SIGNAL gpio_in_lines  : std_logic_vector(31 DOWNTO 0); --! GPIO inputs
+    SIGNAL gpio_out_lines : std_logic_vector(31 DOWNTO 0); --! GPIO outputs
+
+    -- Block links (miso/mosi)
+    SIGNAL block_link_01 : std_logic; --! Link from block 0 to 1
+    SIGNAL block_link_12 : std_logic; --! Link from block 1 to 2
 
     --! Component declaration for the MachX02 internal oscillator
     COMPONENT osch IS
         GENERIC (
             nom_freq : string := "11.08"
         );
-        PORT ( 
+        PORT (
             stdby    : IN    std_logic;
             osc      : OUT   std_logic;
             sedstdby : OUT   std_logic
@@ -75,7 +80,7 @@ ARCHITECTURE rtl OF top IS
 
 BEGIN
 
-    --! Instantiate the internal oscillator for 11.08MHz 
+    --! Instantiate the internal oscillator for 11.08MHz
     i_osch : osch
         GENERIC MAP (
             nom_freq => "11.08"
@@ -94,7 +99,7 @@ BEGIN
             lock  => lock
         );
 
-    --! Instantiate the clock divider for PWM advance    
+    --! Instantiate the clock divider for PWM advance
     i_pwm_clk : ENTITY work.clk_div_n(rtl)
         GENERIC MAP (
             clk_div => 4
@@ -106,7 +111,7 @@ BEGIN
             clk_end_out => OPEN,
             clk_pls_out => pwm_adv
         );
-        
+
     --! Instantiate the PWM device
     i_spi_pwm_device : ENTITY work.spi_pwm_device(rtl)
         GENERIC MAP (
@@ -118,7 +123,7 @@ BEGIN
             spi_cs_in     => spi_cs_s,
             spi_sclk_in   => spi_sclk_s,
             spi_mosi_in   => spi_mosi_s,
-            spi_miso_out  => block_link,
+            spi_miso_out  => block_link_01,
             spi_ver_en_in => spi_ver_en_s,
             pwm_adv_in    => pwm_adv,
             pwm_out       => pwm_lines
@@ -134,20 +139,37 @@ BEGIN
             mod_rst_in    => rst,
             spi_cs_in     => spi_cs_s,
             spi_sclk_in   => spi_sclk_s,
-            spi_mosi_in   => block_link,
-            spi_miso_out  => spi_miso_out,
+            spi_mosi_in   => block_link_01,
+            spi_miso_out  => block_link_12,
             spi_ver_en_in => spi_ver_en_s,
             sdm_out       => sdm_lines
         );
 
+    --! Instantiate the GPIO device
+    i_spi_gpio_device : ENTITY work.spi_gpio_device(rtl)
+        GENERIC MAP (
+            ver_info => ver_info
+        )
+        PORT MAP (
+            mod_clk_in    => clk,
+            mod_rst_in    => rst,
+            spi_cs_in     => spi_cs_s,
+            spi_sclk_in   => spi_sclk_s,
+            spi_mosi_in   => block_link_12,
+            spi_miso_out  => spi_miso_out,
+            spi_ver_en_in => spi_ver_en_s,
+            gpio_bus_in   => gpio_in_lines,
+            gpio_bus_out  => gpio_out_lines
+        );
+
     --! @brief Reset process
     --!
-    --! This process provides a synchronous reset signal where possible. Before 
+    --! This process provides a synchronous reset signal where possible. Before
     --! the PLL has locked, it asserts reset; and after the PLL has locked it
     --! uses the resynchronized reset input pin.
     pr_reset : PROCESS (clk, lock) IS
     BEGIN
-    
+
         IF (lock = '0') THEN
             rst_ms <= '1';
             rst    <= '1';
@@ -155,7 +177,7 @@ BEGIN
             rst_ms <= rst_in;
             rst    <= rst_ms;
         END IF;
-         
+
     END PROCESS pr_reset;
 
     --! @brief SPI input double-flop resynchronizer
@@ -164,7 +186,7 @@ BEGIN
     --! ensure the signals are stable for SPI processing
     pr_spi_input : PROCESS (clk) IS
     BEGIN
-    
+
         IF (rising_edge(clk)) THEN
             spi_cs_ms     <= spi_cs_in;
             spi_sclk_ms   <= spi_sclk_in;
@@ -175,12 +197,20 @@ BEGIN
             spi_mosi_s    <= spi_mosi_ms;
             spi_ver_en_s  <= spi_ver_en_ms;
         END IF;
-        
+
     END PROCESS pr_spi_input;
-    
+
     led_out(7) <= pwm_lines(0);
     led_out(6) <= pwm_lines(1);
     led_out(5) <= sdm_lines(0);
     led_out(4) <= sdm_lines(1);
+    led_out(3) <= gpio_out_lines(3);
+    led_out(2) <= gpio_out_lines(2);
+    led_out(1) <= gpio_out_lines(1);
+    led_out(0) <= gpio_out_lines(0);
+
+    gpio_in_lines(31)          <= gpio_out_lines(31);
+    gpio_in_lines(30)          <= gpio_out_lines(30);
+    gpio_in_lines(29 DOWNTO 0) <= (OTHERS => '0');
 
 END ARCHITECTURE rtl;
