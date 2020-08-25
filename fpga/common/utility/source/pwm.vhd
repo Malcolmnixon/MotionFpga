@@ -57,20 +57,22 @@ BEGIN
             -- Reset state
             count <= (OTHERS => '0');
             state <= '0';
-        ELSIF (rising_edge(mod_clk_in) AND pwm_adv_in = '1') THEN
-            -- Drive state
-            IF (count < unsigned(pwm_duty_in)) THEN
-                state <= '1';
-            ELSE
-                state <= '0';
+        ELSIF (rising_edge(mod_clk_in)) THEN
+            IF (pwm_adv_in = '1') THEN
+                -- Drive state
+                IF (count < unsigned(pwm_duty_in)) THEN
+                    state <= '1';
+                ELSE
+                    state <= '0';
+                END IF;
+                
+                -- Increment count
+                IF (count = c_count_max) THEN
+                    count <= (OTHERS => '0');
+                ELSE
+                    count <= count + 1;
+                END IF;			
             END IF;
-            
-            -- Increment count
-            IF (count = c_count_max) THEN
-                count <= (OTHERS => '0');
-            ELSE
-                count <= count + 1;
-            END IF;			
         END IF;
             
     END PROCESS pr_pwm;

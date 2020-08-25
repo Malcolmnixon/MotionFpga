@@ -30,22 +30,22 @@ ARCHITECTURE rtl OF level_filter IS
 
     --! Constant for all-high
     CONSTANT c_high : std_logic_vector(count - 2 DOWNTO 0) := (OTHERS => '1');
-    
+
     --! Constant for all-low
     CONSTANT c_low : std_logic_vector(count - 2 DOWNTO 0) := (OTHERS => '0');
 
     --! Input history shift register
     SIGNAL history : std_logic_vector(count - 2 DOWNTO 0);
-    
+
     --! Current state
     SIGNAL state : std_logic;
-    
+
 BEGIN
 
     --! @brief Shift process
     pr_shift : PROCESS (mod_clk_in, mod_rst_in) IS
     BEGIN
-    
+
         IF (mod_rst_in = '1') THEN
             -- Reset
             history <= (OTHERS => '0');
@@ -57,14 +57,18 @@ BEGIN
             ELSIF (sig_in = '0' AND history = c_low) THEN
                 state <= '0';
             END IF;
-            
+
             -- Update history
-            history <= sig_in & history(history'high DOWNTO 1);
+            IF (count = 2) THEN
+                history(0) <= sig_in;
+            ELSE
+                history <= sig_in & history(history'high DOWNTO 1);
+            END IF;
         END IF;
-    
+
     END PROCESS pr_shift;
-    
+
     -- Drive sig_out from current state
     sig_out <= state;
-    
+
 END ARCHITECTURE rtl;
