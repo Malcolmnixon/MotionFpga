@@ -32,6 +32,9 @@
         <Source name="../../common/utility/source/level_filter.vhd" type="VHDL" type_short="VHDL">
             <Options/>
         </Source>
+        <Source name="../../common/utility/source/step_generator.vhd" type="VHDL" type_short="VHDL">
+            <Options/>
+        </Source>
         <Source name="../../common/devices/source/pwm_device.vhd" type="VHDL" type_short="VHDL">
             <Options/>
         </Source>
@@ -62,6 +65,9 @@
         <Source name="../../common/utility/sim/sim_on_percent.vhd" type="VHDL" type_short="VHDL" syn_sim="SimOnly">
             <Options/>
         </Source>
+        <Source name="../../common/utility/sim/sim_edge_count.vhd" type="VHDL" type_short="VHDL" syn_sim="SimOnly">
+            <Options/>
+        </Source>
         <Source name="../../common/utility/sim/clk_div_n_tb.vhd" type="VHDL" type_short="VHDL" syn_sim="SimOnly">
             <Options/>
         </Source>
@@ -81,6 +87,9 @@
             <Options/>
         </Source>
         <Source name="../../common/utility/sim/level_filter_tb.vhd" type="VHDL" type_short="VHDL" syn_sim="SimOnly">
+            <Options/>
+        </Source>
+        <Source name="../../common/utility/sim/step_generator_tb.vhd" type="VHDL" type_short="VHDL" syn_sim="SimOnly">
             <Options/>
         </Source>
         <Source name="../../common/devices/sim/pwm_device_tb.vhd" type="VHDL" type_short="VHDL" syn_sim="SimOnly">
