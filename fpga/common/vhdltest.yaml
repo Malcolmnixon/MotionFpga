@@ -8,6 +8,7 @@ files:
  - utility/source/quad_decoder.vhd
  - utility/source/delay_line.vhd
  - utility/source/level_filter.vhd
+ - utility/source/step_generator.vhd
  - devices/source/pwm_device.vhd
  - devices/source/sdm_device.vhd
  - devices/source/gpio_device.vhd
@@ -18,6 +19,7 @@ files:
  
  # Simulation files
  - utility/sim/sim_on_percent.vhd
+ - utility/sim/sim_edge_count.vhd
  - utility/sim/clk_div_n_tb.vhd
  - utility/sim/edge_detect_tb.vhd
  - utility/sim/pwm_tb.vhd
@@ -25,6 +27,7 @@ files:
  - utility/sim/quad_decoder_tb.vhd
  - utility/sim/delay_line_tb.vhd
  - utility/sim/level_filter_tb.vhd
+ - utility/sim/step_generator_tb.vhd
  - devices/sim/pwm_device_tb.vhd
  - devices/sim/sdm_device_tb.vhd
  - devices/sim/gpio_device_tb.vhd
@@ -43,6 +46,7 @@ tests:
  - quad_decoder_tb
  - delay_line_tb
  - level_filter_tb
+ - step_generator_tb
  - pwm_device_tb
  - sdm_device_tb
  - gpio_device_tb

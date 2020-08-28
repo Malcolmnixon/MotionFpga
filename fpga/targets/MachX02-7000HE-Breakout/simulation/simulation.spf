@@ -6,6 +6,7 @@
     <Source worklib="work" path="../../common/utility/source/edge_detect.vhd" type="VHDL" include="none"/>
     <Source worklib="work" path="../../common/communications/source/spi_block.vhd" type="VHDL" include="none"/>
     <Source worklib="work" path="../../common/communications/source/spi_version_block.vhd" type="VHDL" include="none"/>
+    <Source worklib="work" path="../../common/communications/source/spi_gpio_device.vhd" type="VHDL" include="none"/>
     <Source worklib="work" path="../../common/communications/source/spi_sdm_device.vhd" type="VHDL" include="none"/>
     <Source worklib="work" path="../../common/utility/source/pwm.vhd" type="VHDL" include="none"/>
     <Source worklib="work" path="../../common/devices/source/pwm_device.vhd" type="VHDL" include="none"/>
@@ -24,6 +25,9 @@
     <Source worklib="work" path="../../common/utility/sim/delay_line_tb.vhd" type="VHDL" include="none"/>
     <Source worklib="work" path="../../common/utility/source/level_filter.vhd" type="VHDL" include="none"/>
     <Source worklib="work" path="../../common/utility/sim/level_filter_tb.vhd" type="VHDL" include="none"/>
+    <Source worklib="work" path="../../common/utility/sim/sim_edge_count.vhd" type="VHDL" include="none"/>
+    <Source worklib="work" path="../../common/utility/source/step_generator.vhd" type="VHDL" include="none"/>
+    <Source worklib="work" path="../../common/utility/sim/step_generator_tb.vhd" type="VHDL" include="none"/>
     <Source worklib="work" path="../../common/devices/sim/pwm_device_tb.vhd" type="VHDL" include="none"/>
     <Source worklib="work" path="../../common/devices/sim/sdm_device_tb.vhd" type="VHDL" include="none"/>
     <Source worklib="work" path="../../common/communications/sim/spi_block_tb.vhd" type="VHDL" include="none"/>
