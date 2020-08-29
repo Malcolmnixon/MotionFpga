@@ -46,7 +46,7 @@ ARCHITECTURE rtl OF step_generator IS
     SIGNAL count : unsigned(count_wid - 1 DOWNTO 0);
     
     --! Current delay counter
-    SIGNAL delay : unsigned(count_wid - 1 DOWNTO 0);
+    SIGNAL delay : unsigned(delay_wid - 1 DOWNTO 0);
     
     --! Step state
     SIGNAL step : std_logic;

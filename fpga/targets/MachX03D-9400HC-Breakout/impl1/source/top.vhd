@@ -9,6 +9,12 @@ LIBRARY ieee;
 --! Using IEEE standard logic components
 USE ieee.std_logic_1164.ALL;
 
+--! Using MachX03D library
+LIBRARY machxo3d;
+
+--! Using MachX03D library components (for oscj)
+USE machxo3d.ALL;
+
 --! @brief MotionFpga top-level entity
 ENTITY top IS
     PORT (
@@ -58,16 +64,17 @@ ARCHITECTURE rtl OF top IS
     SIGNAL block_link_12 : std_logic; --! Link from block 1 to 2
 
     --! Component declaration for the MachX02 internal oscillator
-    COMPONENT osch IS
+    COMPONENT oscj IS
         GENERIC (
             nom_freq : string := "11.08"
         );
         PORT (
             stdby    : IN    std_logic;
             osc      : OUT   std_logic;
-            sedstdby : OUT   std_logic
+            sedstdby : OUT   std_logic;
+            oscesb   : OUT   std_logic
         );
-    END COMPONENT osch;
+    END COMPONENT oscj;
 
     --! Component delcaration for the PLL
     COMPONENT pll IS
@@ -81,14 +88,15 @@ ARCHITECTURE rtl OF top IS
 BEGIN
 
     --! Instantiate the internal oscillator for 11.08MHz
-    i_osch : osch
+    i_oscj : oscj
         GENERIC MAP (
             nom_freq => "11.08"
         )
         PORT MAP (
             stdby    => '0',
             osc      => osc,
-            sedstdby => OPEN
+            sedstdby => OPEN,
+            oscesb   => OPEN
         );
 
     --! Instantiate the PLL (11.08MHz -> 99.72MHz)
