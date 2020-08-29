@@ -8,7 +8,8 @@ This project builds a Motion FPGA used by processor to easily control motion dev
 
 # Target Hardware
 This project has targets for the following FPGAs:
-* Lattice MachX02-7000HE [Breakout Board](https://www.latticesemi.com/en/Products/DevelopmentBoardsAndKits/MachXO2BreakoutBoard)
+* Lattice MachXO2-7000HE [Breakout Board](https://www.latticesemi.com/products/developmentboardsandkits/machxo2breakoutboard)
+* Lattice MachXO3D-9400HC [Breakout Board](https://www.latticesemi.com/products/developmentboardsandkits/machxo3d_breakout_board)
 
 # Overview
 Numerous motion-control devices require I/O signals which can be cumbersome for a processor to manage directly.
