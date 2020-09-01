@@ -49,6 +49,11 @@ ARCHITECTURE rtl OF top IS
     SIGNAL spi_ver_en_s  : std_logic; --! SPI Version Enable input (stable)
     SIGNAL pwm_adv       : std_logic; --! PWM advance signal
 
+    -- SPI slave signals
+    SIGNAL dat_rd_reg  : std_logic_vector(95 DOWNTO 0); --! SPI read data (response)
+    SIGNAL dat_wr_reg  : std_logic_vector(95 DOWNTO 0); --! SPI write data (command)
+    SIGNAL dat_wr_done : std_logic;                     --! SPI write done pulse
+
     -- PWM lines
     SIGNAL pwm_lines : std_logic_vector(3 DOWNTO 0); --! PWM outputs
 
@@ -58,10 +63,6 @@ ARCHITECTURE rtl OF top IS
     -- GPIO lines
     SIGNAL gpio_in_lines  : std_logic_vector(31 DOWNTO 0); --! GPIO inputs
     SIGNAL gpio_out_lines : std_logic_vector(31 DOWNTO 0); --! GPIO outputs
-
-    -- Block links (miso/mosi)
-    SIGNAL block_link_01 : std_logic; --! Link from block 0 to 1
-    SIGNAL block_link_12 : std_logic; --! Link from block 1 to 2
 
     --! Component declaration for the MachX02 internal oscillator
     COMPONENT oscj IS
@@ -120,54 +121,56 @@ BEGIN
             clk_pls_out => pwm_adv
         );
 
-    --! Instantiate the PWM device
-    i_spi_pwm_device : ENTITY work.spi_pwm_device(rtl)
+    --! Instantiate SPI slave bus
+    i_spi_slave : ENTITY work.spi_slave(rtl)
         GENERIC MAP (
-            ver_info => ver_info
+            size => 96
         )
         PORT MAP (
-            mod_clk_in    => clk,
-            mod_rst_in    => rst,
-            spi_cs_in     => spi_cs_s,
-            spi_sclk_in   => spi_sclk_s,
-            spi_mosi_in   => spi_mosi_s,
-            spi_miso_out  => block_link_01,
-            spi_ver_en_in => spi_ver_en_s,
-            pwm_adv_in    => pwm_adv,
-            pwm_out       => pwm_lines
+            mod_clk_in      => clk,
+            mod_rst_in      => rst,
+            spi_cs_in       => spi_cs_s,
+            spi_sclk_in     => spi_sclk_s,
+            spi_mosi_in     => spi_mosi_s,
+            spi_miso_out    => spi_miso_out,
+            dat_rd_reg_in   => dat_rd_reg,
+            dat_wr_reg_out  => dat_wr_reg,
+            dat_wr_done_out => dat_wr_done
+        );
+        
+    --! Instantiate the PWM device
+    i_pwm_device : ENTITY work.pwm_device(rtl)
+        PORT MAP (
+            mod_clk_in     => clk,
+            mod_rst_in     => rst,
+            dat_wr_done_in => dat_wr_done,
+            dat_wr_reg_in  => dat_wr_reg(31 DOWNTO 0),
+            dat_rd_reg_out => dat_rd_reg(31 DOWNTO 0),
+            pwm_adv_in     => pwm_adv,
+            pwm_out        => pwm_lines
         );
 
     --! Instantiate the PWM device
-    i_spi_sdm_device : ENTITY work.spi_sdm_device(rtl)
-        GENERIC MAP (
-            ver_info => ver_info
-        )
+    i_sdm_device : ENTITY work.sdm_device(rtl)
         PORT MAP (
-            mod_clk_in    => clk,
-            mod_rst_in    => rst,
-            spi_cs_in     => spi_cs_s,
-            spi_sclk_in   => spi_sclk_s,
-            spi_mosi_in   => block_link_01,
-            spi_miso_out  => block_link_12,
-            spi_ver_en_in => spi_ver_en_s,
-            sdm_out       => sdm_lines
+            mod_clk_in     => clk,
+            mod_rst_in     => rst,
+            dat_wr_done_in => dat_wr_done,
+            dat_wr_reg_in  => dat_wr_reg(63 DOWNTO 32),
+            dat_rd_reg_out => dat_rd_reg(63 DOWNTO 32),
+            sdm_out        => sdm_lines
         );
 
     --! Instantiate the GPIO device
-    i_spi_gpio_device : ENTITY work.spi_gpio_device(rtl)
-        GENERIC MAP (
-            ver_info => ver_info
-        )
+    i_gpio_device : ENTITY work.gpio_device(rtl)
         PORT MAP (
-            mod_clk_in    => clk,
-            mod_rst_in    => rst,
-            spi_cs_in     => spi_cs_s,
-            spi_sclk_in   => spi_sclk_s,
-            spi_mosi_in   => block_link_12,
-            spi_miso_out  => spi_miso_out,
-            spi_ver_en_in => spi_ver_en_s,
-            gpio_bus_in   => gpio_in_lines,
-            gpio_bus_out  => gpio_out_lines
+            mod_clk_in     => clk,
+            mod_rst_in     => rst,
+            dat_wr_done_in => dat_wr_done,
+            dat_wr_reg_in  => dat_wr_reg(95 DOWNTO 64),
+            dat_rd_reg_out => dat_rd_reg(95 DOWNTO 64),
+            gpio_bus_in    => gpio_in_lines,
+            gpio_bus_out   => gpio_out_lines
         );
 
     --! @brief Reset process
@@ -195,7 +198,16 @@ BEGIN
     pr_spi_input : PROCESS (clk) IS
     BEGIN
 
-        IF (rising_edge(clk)) THEN
+        IF (rst = '1') THEN
+            spi_cs_ms     <= '0';
+            spi_sclk_ms   <= '0';
+            spi_mosi_ms   <= '0';
+            spi_ver_en_ms <= '0';
+            spi_cs_s      <= '0';
+            spi_sclk_s    <= '0';
+            spi_mosi_s    <= '0';
+            spi_ver_en_s  <= '0';
+        ELSIF (rising_edge(clk)) THEN
             spi_cs_ms     <= spi_cs_in;
             spi_sclk_ms   <= spi_sclk_in;
             spi_mosi_ms   <= spi_mosi_in;

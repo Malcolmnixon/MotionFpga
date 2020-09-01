@@ -13,10 +13,6 @@ files:
  - devices/source/sdm_device.vhd
  - devices/source/gpio_device.vhd
  - communications/source/spi_slave.vhd
- - communications/source/spi_block.vhd
- - communications/source/spi_version_block.vhd
- - communications/source/spi_pwm_device.vhd
- - communications/source/spi_sdm_device.vhd
  
  # Simulation files
  - utility/sim/sim_on_percent.vhd
@@ -34,10 +30,6 @@ files:
  - devices/sim/gpio_device_tb.vhd
  - communications/sim/sim_spi_master.vhd
  - communications/sim/spi_slave_tb.vhd
- - communications/sim/spi_block_tb.vhd
- - communications/sim/spi_version_block_tb.vhd
- - communications/sim/spi_pwm_device_tb.vhd
- - communications/sim/spi_sdm_device_tb.vhd
 
 tests:
  # Testbenches
@@ -53,7 +45,3 @@ tests:
  - sdm_device_tb
  - gpio_device_tb
  - spi_slave_tb
- - spi_block_tb
- - spi_version_block_tb
- - spi_pwm_device_tb
- - spi_sdm_device_tb

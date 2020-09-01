@@ -96,7 +96,7 @@ BEGIN
                     dat_wr_done_out <= '1';
                 ELSIF (sclk_rise = '1') THEN
                     -- First edge - write data
-                    spi_miso_out <= shift(31);
+                    spi_miso_out <= shift(size - 1);
                 ELSIF (sclk_fall = '1') THEN
                     -- Second edge - capture data
                     shift <= shift(size - 2 DOWNTO 0) & spi_mosi_in;
