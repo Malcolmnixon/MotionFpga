@@ -47,21 +47,6 @@
         <Source name="../../common/communications/source/spi_slave.vhd" type="VHDL" type_short="VHDL">
             <Options/>
         </Source>
-        <Source name="../../common/communications/source/spi_block.vhd" type="VHDL" type_short="VHDL">
-            <Options/>
-        </Source>
-        <Source name="../../common/communications/source/spi_version_block.vhd" type="VHDL" type_short="VHDL">
-            <Options/>
-        </Source>
-        <Source name="../../common/communications/source/spi_pwm_device.vhd" type="VHDL" type_short="VHDL">
-            <Options/>
-        </Source>
-        <Source name="../../common/communications/source/spi_sdm_device.vhd" type="VHDL" type_short="VHDL">
-            <Options/>
-        </Source>
-        <Source name="../../common/communications/source/spi_gpio_device.vhd" type="VHDL" type_short="VHDL">
-            <Options/>
-        </Source>
         <Source name="impl1/source/top.vhd" type="VHDL" type_short="VHDL">
             <Options top_module="top"/>
         </Source>
@@ -108,18 +93,6 @@
             <Options/>
         </Source>
         <Source name="../../common/communications/sim/spi_slave_tb.vhd" type="VHDL" type_short="VHDL" syn_sim="SimOnly">
-            <Options/>
-        </Source>
-        <Source name="../../common/communications/sim/spi_block_tb.vhd" type="VHDL" type_short="VHDL" syn_sim="SimOnly">
-            <Options/>
-        </Source>
-        <Source name="../../common/communications/sim/spi_version_block_tb.vhd" type="VHDL" type_short="VHDL" syn_sim="SimOnly">
-            <Options/>
-        </Source>
-        <Source name="../../common/communications/sim/spi_pwm_device_tb.vhd" type="VHDL" type_short="VHDL" syn_sim="SimOnly">
-            <Options/>
-        </Source>
-        <Source name="../../common/communications/sim/spi_sdm_device_tb.vhd" type="VHDL" type_short="VHDL" syn_sim="SimOnly">
             <Options/>
         </Source>
         <Source name="impl1/sim/top_tb.vhd" type="VHDL" type_short="VHDL" syn_sim="SimOnly">
