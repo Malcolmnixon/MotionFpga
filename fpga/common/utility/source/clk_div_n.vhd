@@ -18,12 +18,13 @@ USE ieee.numeric_std.ALL;
 --! value.
 ENTITY clk_div_n IS
     GENERIC (
-        clk_div : integer RANGE 1 TO integer'high := 4 --! Divider amount
+        clk_div : integer RANGE 2 TO integer'high := 4 --! Divider amount
     );
     PORT (
         mod_clk_in  : IN    std_logic; --! Module clock
         mod_rst_in  : IN    std_logic; --! Module reset (async)
         clk_adv_in  : IN    std_logic; --! Clock advance flag
+        clk_clr_in  : IN    std_logic; --! Clock clear flag
         clk_end_out : OUT   std_logic; --! Clock end flag
         clk_pls_out : OUT   std_logic  --! Clock pulse flag
     );
@@ -44,7 +45,7 @@ BEGIN
     BEGIN
         
         IF (mod_rst_in = '1') THEN
-            -- Reset
+            -- Asynchronous aeset
             count       <= 0;
             clk_end_out <= '0';
             clk_pls_out <= '0';
@@ -53,7 +54,11 @@ BEGIN
             clk_pls_out <= '0';
             
             -- Handle conditional advance
-            IF (clk_adv_in = '1') THEN
+            IF (clk_clr_in = '1') THEN
+                -- Synchronous clear
+                count       <= 0;
+                clk_end_out <= '0';
+            ELSIF (clk_adv_in = '1') THEN
                 IF (count = clk_div - 1) THEN
                     -- Handle roll-over
                     count       <= 0;
