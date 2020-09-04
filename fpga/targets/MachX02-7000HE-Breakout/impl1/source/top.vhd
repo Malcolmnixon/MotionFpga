@@ -17,6 +17,9 @@ USE machxo2.ALL;
 
 --! @brief MotionFpga top-level entity
 ENTITY top IS
+    GENERIC (
+        version : std_logic_vector(31 DOWNTO 0) := X"00000000" --! Version number
+    );
     PORT (
         rst_in        : IN    std_logic;                   --! FPGA reset input line
         spi_cs_in     : IN    std_logic;                   --! SPI chip-select input line
@@ -30,9 +33,6 @@ END ENTITY top;
 
 --! Architecture rtl of top entity
 ARCHITECTURE rtl OF top IS
-
-    --! Version information for this FPGA
-    CONSTANT ver_info : std_logic_vector(31 DOWNTO 0) := X"00000000";
 
     SIGNAL osc           : std_logic; --! Internal oscillator (11.08MHz)
     SIGNAL lock          : std_logic; --! PLL Lock
@@ -48,6 +48,10 @@ ARCHITECTURE rtl OF top IS
     SIGNAL spi_mosi_s    : std_logic; --! SPI MOSI input (stable)
     SIGNAL spi_ver_en_s  : std_logic; --! SPI Version Enable input (stable)
     SIGNAL pwm_adv       : std_logic; --! PWM advance signal
+    
+    -- SPI slave output signals
+    SIGNAL spi_miso_out_device  : std_logic; --! SPI MISO output for devices
+    SIGNAL spi_miso_out_version : std_logic; --! SPI MISO output for version
 
     -- SPI slave signals
     SIGNAL dat_rd_reg  : std_logic_vector(95 DOWNTO 0); --! SPI read data (response)
@@ -107,7 +111,7 @@ BEGIN
         );
 
     --! Instantiate the clock divider for PWM advance
-    i_pwm_clk : ENTITY work.clk_div_n(rtl)
+    i_pwm_clk : ENTITY work.clk_div_n
         GENERIC MAP (
             clk_div => 4
         )
@@ -119,8 +123,8 @@ BEGIN
             clk_pls_out => pwm_adv
         );
 
-    --! Instantiate SPI slave bus
-    i_spi_slave : ENTITY work.spi_slave(rtl)
+    --! Instantiate SPI slave device bus
+    i_spi_slave_device : ENTITY work.spi_slave
         GENERIC MAP (
             size => 96
         )
@@ -130,14 +134,31 @@ BEGIN
             spi_cs_in       => spi_cs_s,
             spi_sclk_in     => spi_sclk_s,
             spi_mosi_in     => spi_mosi_s,
-            spi_miso_out    => spi_miso_out,
+            spi_miso_out    => spi_miso_out_device,
             dat_rd_reg_in   => dat_rd_reg,
             dat_wr_reg_out  => dat_wr_reg,
             dat_wr_done_out => dat_wr_done
         );
+    
+    --! Instantiate SPI slave version bus
+    i_spi_slave_version : ENTITY work.spi_slave
+        GENERIC MAP (
+            size => 32
+        )
+        PORT MAP (
+            mod_clk_in      => clk,
+            mod_rst_in      => rst,
+            spi_cs_in       => spi_cs_s,
+            spi_sclk_in     => spi_sclk_s,
+            spi_mosi_in     => '0',
+            spi_miso_out    => spi_miso_out_version,
+            dat_rd_reg_in   => version,
+            dat_wr_reg_out  => OPEN,
+            dat_wr_done_out => OPEN
+        );
         
     --! Instantiate the PWM device
-    i_pwm_device : ENTITY work.pwm_device(rtl)
+    i_pwm_device : ENTITY work.pwm_device
         PORT MAP (
             mod_clk_in     => clk,
             mod_rst_in     => rst,
@@ -149,7 +170,7 @@ BEGIN
         );
 
     --! Instantiate the PWM device
-    i_sdm_device : ENTITY work.sdm_device(rtl)
+    i_sdm_device : ENTITY work.sdm_device
         PORT MAP (
             mod_clk_in     => clk,
             mod_rst_in     => rst,
@@ -160,7 +181,7 @@ BEGIN
         );
 
     --! Instantiate the GPIO device
-    i_gpio_device : ENTITY work.gpio_device(rtl)
+    i_gpio_device : ENTITY work.gpio_device
         PORT MAP (
             mod_clk_in     => clk,
             mod_rst_in     => rst,
@@ -193,7 +214,7 @@ BEGIN
     --!
     --! This process double-flops the SPI inputs to resolve metastability and
     --! ensure the signals are stable for SPI processing
-    pr_spi_input : PROCESS (clk) IS
+    pr_spi_input : PROCESS (clk, rst) IS
     BEGIN
 
         IF (rst = '1') THEN
@@ -217,6 +238,9 @@ BEGIN
         END IF;
 
     END PROCESS pr_spi_input;
+    
+    -- Output the version (if enabled) or the device
+    spi_miso_out <= spi_miso_out_version WHEN spi_ver_en_s = '1' ELSE spi_miso_out_device;
 
     led_out(7) <= pwm_lines(0);
     led_out(6) <= pwm_lines(1);

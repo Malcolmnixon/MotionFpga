@@ -15,10 +15,14 @@ END ENTITY top_tb;
 
 ARCHITECTURE tb OF top_tb IS
 
+    --! Version number
+    CONSTANT c_version : std_logic_vector(31 DOWNTO 0) := X"12345678";
+    
     --! Stimulus record type
     TYPE t_stimulus IS RECORD
         name : string(1 TO 20);               --! Stimulus name
         rst  : std_logic;                     --! Reset input
+        ver  : std_logic;                     --! Version select
         mosi : std_logic_vector(95 DOWNTO 0); --! Mosi data to top
         miso : std_logic_vector(95 DOWNTO 0); --! Expected miso data from top
     END RECORD t_stimulus;
@@ -32,36 +36,48 @@ ARCHITECTURE tb OF top_tb IS
         ( 
             name => "Reset               ",
             rst  => '1',
+            ver  => '0',
             mosi => (OTHERS => '0'),
             miso => (OTHERS => '0')
         ),
         (
+            name => "Version             ",
+            rst  => '0',
+            ver  => '1',
+            mosi => (OTHERS => '0'),
+            miso => c_version & X"0000000000000000"
+        ),
+        (
             name => "Zero                ",
             rst  => '0',
+            ver  => '0',
             mosi => (OTHERS => '0'),
             miso => (OTHERS => '0')
         ),
         (
             name => "Activate            ",
             rst  => '0',
+            ver  => '0',
             mosi => X"C0000000" & X"FFAA5500" & X"0055AAFF",
             miso => X"00000000" & X"00000000" & X"00000000"
         ),
         (
             name => "Deactivate          ",
             rst  => '0',
+            ver  => '0',
             mosi => X"00000000" & X"00000000" & X"00000000",
             miso => X"C0000000" & X"FFAA5500" & X"0055AAFF"
         )
     );
         
     -- Signals for uut
-    SIGNAL rst      : std_logic;                    --! Reset line
-    SIGNAL spi_cs   : std_logic;                    --! SPI cs line
-    SIGNAL spi_sclk : std_logic;                    --! SPI sclk line
-    SIGNAL spi_mosi : std_logic;                    --! SPI mosi line
-    SIGNAL spi_miso : std_logic;                    --! SPI miso line
-    SIGNAL led      : std_logic_vector(7 DOWNTO 0); --! LED outputs
+    SIGNAL rst        : std_logic;                    --! Reset line
+    SIGNAL spi_cs     : std_logic;                    --! SPI cs line
+    SIGNAL spi_sclk   : std_logic;                    --! SPI sclk line
+    SIGNAL spi_mosi   : std_logic;                    --! SPI mosi line
+    SIGNAL spi_miso   : std_logic;                    --! SPI miso line
+    SIGNAL spi_ver_en : std_logic;                    --! SPI version select line
+    SIGNAL led        : std_logic_vector(7 DOWNTO 0); --! LED outputs
     
     -- Signals for sim_spi_master
     SIGNAL spi_rst    : std_logic;                     --! Reset to sim_spi_master
@@ -90,19 +106,22 @@ ARCHITECTURE tb OF top_tb IS
 BEGIN
 
     --! Instantiate top as uut
-    i_uut : ENTITY work.top(rtl)
+    i_uut : ENTITY work.top
+        GENERIC MAP (
+            version => c_version
+        )
         PORT MAP (
             rst_in        => rst,
             spi_cs_in     => spi_cs,
             spi_sclk_in   => spi_sclk,
             spi_mosi_in   => spi_mosi,
             spi_miso_out  => spi_miso,
-            spi_ver_en_in => '0',
+            spi_ver_en_in => spi_ver_en,
             led_out       => led
         );
         
     --! Instantiate sim_spi_master
-    i_spi : ENTITY work.sim_spi_master(sim)
+    i_spi : ENTITY work.sim_spi_master
         GENERIC MAP (
             spi_width => 96
         )
@@ -125,6 +144,7 @@ BEGIN
         -- Initialize and reset entities
         rst        <= '1';
         spi_rst    <= '1';
+        spi_ver_en <= '0';
         data_mosi  <= (OTHERS => '0');
         xfer_start <= '0';
         WAIT FOR 100 ns;
@@ -139,8 +159,9 @@ BEGIN
             REPORT "Starting: " & c_stimulus(s).name SEVERITY note;
             
             -- Set inputs
-            rst       <= c_stimulus(s).rst;
-            data_mosi <= c_stimulus(s).mosi;
+            rst        <= c_stimulus(s).rst;
+            spi_ver_en <= c_stimulus(s).ver;
+            data_mosi  <= c_stimulus(s).mosi;
 
             -- Perform SPI transfer
             xfer_start <= '1';
