@@ -160,6 +160,7 @@ BEGIN
         PORT MAP (
             mod_clk_in  => clk,
             mod_rst_in  => rst,
+            clk_clr_in  => '0',
             clk_adv_in  => '1',
             clk_end_out => OPEN,
             clk_pls_out => advance

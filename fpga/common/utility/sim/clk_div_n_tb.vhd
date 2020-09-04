@@ -23,6 +23,7 @@ ARCHITECTURE tb OF clk_div_n_tb IS
     TYPE t_stimulus IS RECORD
         name    : string(1 TO 20);          --! Stimulus name
         rst     : std_logic_vector(0 TO 7); --! rst input to uut
+        clk_clr : std_logic_vector(0 TO 7); --! clk_clr input to uut
         clk_adv : std_logic_vector(0 TO 7); --! clk_adv input to uut
         clk_end : std_logic_vector(0 TO 7); --! clk_end expected from uut
         clk_pls : std_logic_vector(0 TO 7); --! clk_pls expected from uut
@@ -40,6 +41,7 @@ ARCHITECTURE tb OF clk_div_n_tb IS
         ( 
             name    => "Hold in reset       ",
             rst     => "11111111",
+            clk_clr => "00000000",
             clk_adv => "00000000",
             clk_end => "00000000",
             clk_pls => "00000000"
@@ -47,6 +49,15 @@ ARCHITECTURE tb OF clk_div_n_tb IS
         ( 
             name    => "Not enabled         ",
             rst     => "00000000",
+            clk_clr => "00000000",
+            clk_adv => "00000000",
+            clk_end => "00000000",
+            clk_pls => "00000000"
+        ),
+        ( 
+            name    => "Clear               ",
+            rst     => "00000000",
+            clk_clr => "11111111",
             clk_adv => "00000000",
             clk_end => "00000000",
             clk_pls => "00000000"
@@ -54,6 +65,7 @@ ARCHITECTURE tb OF clk_div_n_tb IS
         ( 
             name    => "Normal counting 1   ",
             rst     => "00000000",
+            clk_clr => "00000000",
             clk_adv => "11111111",
             clk_end => "00010001",
             clk_pls => "00010001"
@@ -61,6 +73,7 @@ ARCHITECTURE tb OF clk_div_n_tb IS
         ( 
             name    => "Normal counting 2   ",
             rst     => "00000000",
+            clk_clr => "00000000",
             clk_adv => "11111111",
             clk_end => "00010001",
             clk_pls => "00010001"
@@ -68,8 +81,17 @@ ARCHITECTURE tb OF clk_div_n_tb IS
         ( 
             name    => "Freezing count      ",
             rst     => "00000000",
+            clk_clr => "00000000",
             clk_adv => "00001111",
             clk_end => "11110001",
+            clk_pls => "00000001"
+        ),
+        (
+            name    => "Count and clear     ",
+            rst     => "00000000",
+            clk_clr => "00110000",
+            clk_adv => "11111111",
+            clk_end => "00000001",
             clk_pls => "00000001"
         )
     );
@@ -77,6 +99,7 @@ ARCHITECTURE tb OF clk_div_n_tb IS
     -- Signals to clk_div_n uut
     SIGNAL clk     : std_logic; --! Clock
     SIGNAL rst     : std_logic; --! Reset
+    SIGNAL clk_clr : std_logic; --! Count clear to uut
     SIGNAL clk_adv : std_logic; --! Count advance to uut
     SIGNAL clk_end : std_logic; --! Count end from uut
     SIGNAL clk_pls : std_logic; --! Count pulse from uut
@@ -91,6 +114,7 @@ BEGIN
         PORT MAP (
             mod_clk_in  => clk,
             mod_rst_in  => rst,
+            clk_clr_in  => clk_clr,
             clk_adv_in  => clk_adv,
             clk_end_out => clk_end,
             clk_pls_out => clk_pls
@@ -128,6 +152,7 @@ BEGIN
             FOR t IN 0 TO 7 LOOP
                 -- Set inputs then wait for clock to rise
                 rst     <= c_stimulus(s).rst(t);
+                clk_clr <= c_stimulus(s).clk_clr(t);
                 clk_adv <= c_stimulus(s).clk_adv(t);
                 WAIT UNTIL clk = '1';
                 
