@@ -240,7 +240,8 @@ BEGIN
     END PROCESS pr_spi_input;
     
     -- Output the version (if enabled) or the device
-    spi_miso_out <= spi_miso_out_version WHEN spi_ver_en_s = '1' ELSE spi_miso_out_device;
+    spi_miso_out <= spi_miso_out_version WHEN spi_ver_en_s = '1' ELSE 
+                    spi_miso_out_device;
 
     led_out(7) <= pwm_lines(0);
     led_out(6) <= pwm_lines(1);
