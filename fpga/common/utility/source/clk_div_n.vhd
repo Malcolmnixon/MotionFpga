@@ -23,8 +23,8 @@ ENTITY clk_div_n IS
     PORT (
         mod_clk_in  : IN    std_logic; --! Module clock
         mod_rst_in  : IN    std_logic; --! Module reset (async)
-        clk_adv_in  : IN    std_logic; --! Clock advance flag
         clk_clr_in  : IN    std_logic; --! Clock clear flag
+        clk_adv_in  : IN    std_logic; --! Clock advance flag
         clk_end_out : OUT   std_logic; --! Clock end flag
         clk_pls_out : OUT   std_logic  --! Clock pulse flag
     );
