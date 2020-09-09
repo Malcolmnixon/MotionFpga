@@ -22,9 +22,11 @@ file_list:
  - ../../common/devices/source/pwm_device.vhd
  - ../../common/devices/source/sdm_device.vhd
  - ../../common/devices/source/gpio_device.vhd
+ - ../../common/devices/source/drv8711_spi.vhd
  - ../../common/devices/sim/pwm_device_tb.vhd
  - ../../common/devices/sim/sdm_device_tb.vhd
  - ../../common/devices/sim/gpio_device_tb.vhd
+ - ../../common/devices/sim/drv8711_spi_tb.vhd
  - ../../common/communications/source/spi_slave.vhd
  - ../../common/communications/sim/sim_spi_master.vhd
  - ../../common/communications/sim/spi_slave_tb.vhd

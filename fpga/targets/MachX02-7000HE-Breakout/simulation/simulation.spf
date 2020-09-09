@@ -30,8 +30,10 @@
     <Source worklib="work" path="impl1/IPexpress/pll.vhd" type="VHDL" include="none"/>
     <Source worklib="work" path="impl1/source/top.vhd" type="VHDL" include="none"/>
     <Source worklib="work" path="impl1/sim/top_tb.vhd" type="VHDL" include="none"/>
+    <Source worklib="work" path="../../common/devices/source/drv8711_spi.vhd" type="VHDL" include="none"/>
+    <Source worklib="work" path="../../common/devices/sim/drv8711_spi_tb.vhd" type="VHDL" include="none"/>
     <SimLib value="pmi_work ovi_machxo2"/>
     <GlbInc value=""/>
     <Macro value=""/>
-    <TopModule instance="" language="VHDL" name="top_tb"/>
+    <TopModule instance="" language="VHDL" name="blink"/>
 </BaliSimProject>

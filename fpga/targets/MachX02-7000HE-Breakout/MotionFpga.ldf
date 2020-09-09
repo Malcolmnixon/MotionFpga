@@ -44,6 +44,9 @@
         <Source name="../../common/devices/source/gpio_device.vhd" type="VHDL" type_short="VHDL">
             <Options/>
         </Source>
+        <Source name="../../common/devices/source/drv8711_spi.vhd" type="VHDL" type_short="VHDL">
+            <Options/>
+        </Source>
         <Source name="../../common/communications/source/spi_slave.vhd" type="VHDL" type_short="VHDL">
             <Options/>
         </Source>
@@ -87,6 +90,9 @@
             <Options/>
         </Source>
         <Source name="../../common/devices/sim/gpio_device_tb.vhd" type="VHDL" type_short="VHDL" syn_sim="SimOnly">
+            <Options/>
+        </Source>
+        <Source name="../../common/devices/sim/drv8711_spi_tb.vhd" type="VHDL" type_short="VHDL" syn_sim="SimOnly">
             <Options/>
         </Source>
         <Source name="../../common/communications/sim/sim_spi_master.vhd" type="VHDL" type_short="VHDL" syn_sim="SimOnly">

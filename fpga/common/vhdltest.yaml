@@ -12,6 +12,7 @@ files:
  - devices/source/pwm_device.vhd
  - devices/source/sdm_device.vhd
  - devices/source/gpio_device.vhd
+ - devices/source/drv8711_spi.vhd
  - communications/source/spi_slave.vhd
  
  # Simulation files
@@ -28,6 +29,7 @@ files:
  - devices/sim/pwm_device_tb.vhd
  - devices/sim/sdm_device_tb.vhd
  - devices/sim/gpio_device_tb.vhd
+ - devices/sim/drv8711_spi_tb.vhd
  - communications/sim/sim_spi_master.vhd
  - communications/sim/spi_slave_tb.vhd
 
@@ -44,4 +46,5 @@ tests:
  - pwm_device_tb
  - sdm_device_tb
  - gpio_device_tb
+ - drv8711_spi_tb
  - spi_slave_tb
