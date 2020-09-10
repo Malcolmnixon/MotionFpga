@@ -26,6 +26,9 @@ file_list:
  - ../../common/devices/sim/pwm_device_tb.vhd
  - ../../common/devices/sim/sdm_device_tb.vhd
  - ../../common/devices/sim/gpio_device_tb.vhd
+ - ../../common/devices/sim/sim_step_counter.vhd
+ - ../../common/devices/sim/sim_drv8711_spi.vhd
+ - ../../common/devices/sim/sim_drv8711.vhd
  - ../../common/devices/sim/drv8711_spi_tb.vhd
  - ../../common/communications/source/spi_slave.vhd
  - ../../common/communications/sim/sim_spi_master.vhd
