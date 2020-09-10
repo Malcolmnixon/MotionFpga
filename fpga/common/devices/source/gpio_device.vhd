@@ -11,8 +11,8 @@ USE ieee.std_logic_1164.ALL;
 
 ENTITY gpio_device IS
     PORT (
-        mod_clk_in     : IN    std_logic;                     --! Module Clock
-        mod_rst_in     : IN    std_logic;                     --! Module Reset (async)
+        clk_in         : IN    std_logic;                     --! Clock
+        rst_in         : IN    std_logic;                     --! Asynchronous reset
         dat_wr_done_in : IN    std_logic;                     --! Device Write Done flag
         dat_wr_reg_in  : IN    std_logic_vector(31 DOWNTO 0); --! Device Write Register value
         dat_rd_reg_out : OUT   std_logic_vector(31 DOWNTO 0); --! Device Read Register value
@@ -29,15 +29,17 @@ ARCHITECTURE rtl OF gpio_device IS
 BEGIN
 
     --! @brief Handle outputs (reset and write)
-    pr_output : PROCESS (mod_clk_in, mod_rst_in) IS
+    pr_output : PROCESS (clk_in, rst_in) IS
     BEGIN
     
-        IF (mod_rst_in = '1') THEN
+        IF (rst_in = '1') THEN
             -- Reset
             gpio_out <= (OTHERS => '0');
-        ELSIF (rising_edge(mod_clk_in) AND dat_wr_done_in = '1') THEN
-            -- Save write data
-            gpio_out <= dat_wr_reg_in;
+        ELSIF (rising_edge(clk_in)) THEN
+            IF (dat_wr_done_in = '1') THEN
+                -- Save write data
+                gpio_out <= dat_wr_reg_in;
+            END IF;
         END IF;
         
     END PROCESS pr_output;

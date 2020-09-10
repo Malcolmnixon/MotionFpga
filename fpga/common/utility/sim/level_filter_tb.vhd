@@ -61,10 +61,10 @@ BEGIN
             count => 2
         )
         PORT MAP (
-            mod_clk_in  => clk,
-            mod_rst_in  => rst,
-            sig_in      => sig_in,
-            sig_out     => sig_out
+            clk_in  => clk,
+            rst_in  => rst,
+            sig_in  => sig_in,
+            sig_out => sig_out
         );
 
     --! @brief Clock generation process

@@ -15,7 +15,7 @@ USE ieee.numeric_std.ALL;
 --! @brief Simulated drv8711 entity
 ENTITY sim_drv8711 IS
     PORT (
-        mod_rst_in   : IN    std_logic;                     --! Asynchronous reset
+        rst_in       : IN    std_logic;                     --! Asynchronous reset
         spi_scs_in   : IN    std_logic;                     --! SPI scs line
         spi_sclk_in  : IN    std_logic;                     --! SPI sclk line
         spi_mosi_in  : IN    std_logic;                     --! SPI mosi line
@@ -36,23 +36,23 @@ BEGIN
     --! Create instance of simulated drv8711 spi
     i_drv8711_spi : ENTITY work.sim_drv8711_spi
         PORT MAP (
-            mod_rst_in => mod_rst_in,
-            spi_scs_in => spi_scs_in,
-            spi_sclk_in => spi_sclk_in,
-            spi_mosi_in => spi_mosi_in,
+            rst_in       => rst_in,
+            spi_scs_in   => spi_scs_in,
+            spi_sclk_in  => spi_sclk_in,
+            spi_mosi_in  => spi_mosi_in,
             spi_miso_out => spi_miso_out,
-            dat_miso_in => dat_miso_in,
+            dat_miso_in  => dat_miso_in,
             dat_mosi_out => dat_mosi_out
         );
 
     --! Create instance of step counter
     i_step_counter : ENTITY work.sim_step_counter
         PORT MAP (
-            mod_rst_in => mod_rst_in,
-            step_in    => step_in,
-            dir_in     => dir_in,
-            size_in    => 1,
-            steps_out  => steps_out
+            rst_in    => rst_in,
+            step_in   => step_in,
+            dir_in    => dir_in,
+            size_in   => 1,
+            steps_out => steps_out
         );
     
 END ARCHITECTURE sim;

@@ -27,8 +27,8 @@ ENTITY spi_slave IS
         size : natural RANGE 1 TO natural'high --! Size of the SPI data
     );
     PORT (
-        mod_clk_in      : IN    std_logic;                           --! Module Clock
-        mod_rst_in      : IN    std_logic;                           --! Module Reset (async)
+        clk_in          : IN    std_logic;                           --! Clock
+        rst_in          : IN    std_logic;                           --! Asynchronous reset
         spi_cs_in       : IN    std_logic;                           --! SPI Chip-select
         spi_sclk_in     : IN    std_logic;                           --! SPI Clock
         spi_mosi_in     : IN    std_logic;                           --! SPI MOSI
@@ -59,25 +59,25 @@ BEGIN
     --! Edge detector for SCLK signal
     i_sclk_edge : ENTITY work.edge_detect(rtl)
         PORT MAP (
-            mod_clk_in => mod_clk_in,
-            mod_rst_in => mod_rst_in,
-            sig_in     => spi_sclk_in,
-            rise_out   => sclk_rise,
-            fall_out   => sclk_fall
+            clk_in   => clk_in,
+            rst_in   => rst_in,
+            sig_in   => spi_sclk_in,
+            rise_out => sclk_rise,
+            fall_out => sclk_fall
         );
 
     --! @brief SPI shift process
-    pr_shift : PROCESS (mod_clk_in, mod_rst_in) IS
+    pr_shift : PROCESS (clk_in, rst_in) IS
     BEGIN
 
-        IF (mod_rst_in = '1') THEN
+        IF (rst_in = '1') THEN
             -- Asynchronous reset of state
             in_xfer         <= '0';
             shift           <= (OTHERS => '0');
             spi_miso_out    <= '0';
             dat_wr_reg_out  <= (OTHERS => '0');
             dat_wr_done_out <= '0';
-        ELSIF (rising_edge(mod_clk_in)) THEN
+        ELSIF (rising_edge(clk_in)) THEN
             -- Default dat_wr_done_out to 0 (set only on end transfer)
             dat_wr_done_out <= '0';
             

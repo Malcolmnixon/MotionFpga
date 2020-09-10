@@ -21,8 +21,8 @@ ENTITY sdm IS
         bit_width : integer RANGE 1 TO 32 := 8 --! Bit width
     );
     PORT (
-        mod_clk_in   : IN    std_logic;                                --! Clock
-        mod_rst_in   : IN    std_logic;                                --! Reset (async)
+        clk_in       : IN    std_logic;                                --! Clock
+        rst_in       : IN    std_logic;                                --! Asynchronous reset
         sdm_level_in : IN    std_logic_vector(bit_width - 1 DOWNTO 0); --! Modulator level
         sdm_out      : OUT   std_logic                                 --! Modulator output
     );
@@ -37,13 +37,13 @@ ARCHITECTURE rtl OF sdm IS
 BEGIN
 
     --! @brief Process for sigma-delta generation
-    pr_sdm : PROCESS (mod_clk_in, mod_rst_in) IS
+    pr_sdm : PROCESS (clk_in, rst_in) IS
     BEGIN
     
-        IF (mod_rst_in = '1') THEN
+        IF (rst_in = '1') THEN
             -- Reset state
             accumulator <= (OTHERS => '0');
-        ELSIF (rising_edge(mod_clk_in)) THEN
+        ELSIF (rising_edge(clk_in)) THEN
             -- Accumulate
             accumulator <= unsigned('0' & accumulator(accumulator'HIGH - 1 DOWNTO 0)) + unsigned('0' & sdm_level_in);
         END IF;

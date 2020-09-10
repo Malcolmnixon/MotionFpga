@@ -15,7 +15,7 @@ USE ieee.numeric_std.ALL;
 --! @brief Simulated drv8711 entity
 ENTITY sim_drv8711_spi IS
     PORT (
-        mod_rst_in   : IN    std_logic;                     --! Asynchronous reset
+        rst_in       : IN    std_logic;                     --! Asynchronous reset
         spi_scs_in   : IN    std_logic;                     --! SPI scs line
         spi_sclk_in  : IN    std_logic;                     --! SPI sclk line
         spi_mosi_in  : IN    std_logic;                     --! SPI mosi line
@@ -34,10 +34,10 @@ ARCHITECTURE sim OF sim_drv8711_spi IS
 BEGIN
 
     --! @brief Process to handle SPI traffic
-    pr_spi : PROCESS (mod_rst_in, spi_scs_in, spi_sclk_in) IS
+    pr_spi : PROCESS (rst_in, spi_scs_in, spi_sclk_in) IS
     BEGIN
     
-        IF (mod_rst_in = '1') THEN
+        IF (rst_in = '1') THEN
             -- Reset
             dat_miso <= (OTHERS => '0');
             dat_mosi <= (OTHERS => '0');

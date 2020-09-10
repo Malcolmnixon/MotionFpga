@@ -100,8 +100,8 @@ BEGIN
             bit_width => 2
         )
         PORT MAP (
-            mod_clk_in  => clk,
-            mod_rst_in  => rst,
+            clk_in      => clk,
+            rst_in      => rst,
             pwm_adv_in  => adv,
             pwm_duty_in => duty,
             pwm_out     => pwm
@@ -110,8 +110,8 @@ BEGIN
     --! Instantiate on_percent
     i_on_percent : ENTITY work.sim_on_percent(sim)
         PORT MAP (
-            mod_clk_in  => clk,
-            mod_rst_in  => on_rst,
+            clk_in      => clk,
+            rst_in      => on_rst,
             signal_in   => pwm,
             percent_out => on_percent
         );

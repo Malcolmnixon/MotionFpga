@@ -69,11 +69,11 @@ BEGIN
     --! Instantiate edge_detect as unit under test
     i_uut : ENTITY work.edge_detect(rtl)
         PORT MAP (
-            mod_clk_in => clk,
-            mod_rst_in => rst,
-            sig_in     => sig,
-            rise_out   => rise,
-            fall_out   => fall
+            clk_in   => clk,
+            rst_in   => rst,
+            sig_in   => sig,
+            rise_out => rise,
+            fall_out => fall
         );
 
     --! @brief Clock generation process

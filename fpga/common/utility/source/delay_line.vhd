@@ -17,10 +17,10 @@ ENTITY delay_line IS
         count : natural RANGE 1 TO natural'high := 2 --! Delay length
     );
     PORT (
-        mod_clk_in : IN    std_logic; --! Module clock
-        mod_rst_in : IN    std_logic; --! Module reset (async)
-        sig_in     : IN    std_logic; --! Input signal
-        sig_out    : OUT   std_logic  --! Output signal
+        clk_in  : IN    std_logic; --! Clock
+        rst_in  : IN    std_logic; --! Asynchronous reset
+        sig_in  : IN    std_logic; --! Input signal
+        sig_out : OUT   std_logic  --! Output signal
     );
 END ENTITY delay_line;
 
@@ -36,14 +36,14 @@ ARCHITECTURE rtl OF delay_line IS
 BEGIN
 
     --! @brief Shift process
-    pr_shift : PROCESS (mod_clk_in, mod_rst_in) IS
+    pr_shift : PROCESS (clk_in, rst_in) IS
     BEGIN
     
-        IF (mod_rst_in = '1') THEN
+        IF (rst_in = '1') THEN
             -- Reset
             history <= (OTHERS => '0');
             state   <= '0';
-        ELSIF (rising_edge(mod_clk_in)) THEN
+        ELSIF (rising_edge(clk_in)) THEN
             -- Update history
             history <= sig_in & history(history'high DOWNTO 1);
             state   <= history(0);

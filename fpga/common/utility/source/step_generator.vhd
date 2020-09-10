@@ -29,8 +29,8 @@ ENTITY step_generator IS
         delay_wid : integer RANGE 1 TO integer'high := 6  --! Width of delay
     );
     PORT (
-        mod_clk_in : IN    std_logic;                                --! Module clock
-        mod_rst_in : IN    std_logic;                                --! Module reset (async)
+        clk_in     : IN    std_logic;                                --! Clock
+        rst_in     : IN    std_logic;                                --! Asynchronous reset
         enable_in  : IN    std_logic;                                --! Generator enable flag
         advance_in : IN    std_logic;                                --! Advance flag
         count_in   : IN    std_logic_vector(count_wid - 1 DOWNTO 0); --! Count of steps
@@ -54,15 +54,15 @@ ARCHITECTURE rtl OF step_generator IS
 BEGIN
 
     --! @brief Process to generate steps
-    pr_step : PROCESS (mod_clk_in, mod_rst_in) IS
+    pr_step : PROCESS (clk_in, rst_in) IS
     BEGIN
     
-        IF (mod_rst_in = '1') THEN
+        IF (rst_in = '1') THEN
             -- Reset
             count <= (OTHERS => '0');
             delay <= (OTHERS => '0');
             step  <= '0';
-        ELSIF (rising_edge(mod_clk_in)) THEN
+        ELSIF (rising_edge(clk_in)) THEN
             IF (enable_in = '0') THEN
                 -- Reset (disabled)
                 count <= (OTHERS => '0');

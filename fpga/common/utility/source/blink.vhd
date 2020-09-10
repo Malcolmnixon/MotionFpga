@@ -19,7 +19,7 @@ ENTITY blink IS
     );
     PORT (
         clk_in  : IN    std_logic; --! Clock
-        rst_in  : IN    std_logic; --! Reset
+        rst_in  : IN    std_logic; --! Asynchronous reset
         led_out : OUT   std_logic  --! LED output
     );
 END ENTITY blink;

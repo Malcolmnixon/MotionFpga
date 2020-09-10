@@ -27,8 +27,8 @@ ENTITY pwm IS
         bit_width : natural RANGE 2 TO 32 := 8 --! PWM width
     );
     PORT (
-        mod_clk_in  : IN    std_logic;                                --! Clock
-        mod_rst_in  : IN    std_logic;                                --! Reset (async)
+        clk_in      : IN    std_logic;                                --! Clock
+        rst_in      : IN    std_logic;                                --! Asynchronous reset
         pwm_adv_in  : IN    std_logic;                                --! PWM Advance flag
         pwm_duty_in : IN    std_logic_vector(bit_width - 1 DOWNTO 0); --! PWM duty cycle
         pwm_out     : OUT   std_logic                                 --! PWM output
@@ -50,14 +50,14 @@ ARCHITECTURE rtl OF pwm IS
 BEGIN
 
     --! @brief Process for PWM generation
-    pr_pwm : PROCESS (mod_clk_in, mod_rst_in) IS
+    pr_pwm : PROCESS (clk_in, rst_in) IS
     BEGIN
     
-        IF (mod_rst_in = '1') THEN
+        IF (rst_in = '1') THEN
             -- Reset state
             count <= (OTHERS => '0');
             state <= '0';
-        ELSIF (rising_edge(mod_clk_in)) THEN
+        ELSIF (rising_edge(clk_in)) THEN
             IF (pwm_adv_in = '1') THEN
                 -- Drive state
                 IF (count < unsigned(pwm_duty_in)) THEN
