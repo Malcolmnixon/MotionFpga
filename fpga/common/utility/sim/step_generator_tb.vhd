@@ -143,13 +143,13 @@ BEGIN
             delay_wid => 3
         )
         PORT MAP (
-            mod_clk_in  => clk,
-            mod_rst_in  => rst,
-            enable_in   => enable,
-            advance_in  => advance,
-            count_in    => count,
-            delay_in    => delay,
-            step_out    => step
+            clk_in     => clk,
+            rst_in     => rst,
+            enable_in  => enable,
+            advance_in => advance,
+            count_in   => count,
+            delay_in   => delay,
+            step_out   => step
         );
         
     --! Instantiate clk_div_n to generate advance pulses every 4th clock
@@ -158,22 +158,22 @@ BEGIN
             clk_div => 4
         )
         PORT MAP (
-            mod_clk_in  => clk,
-            mod_rst_in  => rst,
-            clk_clr_in  => '0',
-            clk_adv_in  => '1',
-            clk_end_out => OPEN,
-            clk_pls_out => advance
+            clk_in      => clk,
+            rst_in      => rst,
+            div_clr_in  => '0',
+            div_adv_in  => '1',
+            div_end_out => OPEN,
+            div_pls_out => advance
         );
     
     --! Instantiate edge counter to analyze edges
     i_edge_count : ENTITY work.sim_edge_count(sim)
         PORT MAP (
-            mod_clk_in => clk,
-            mod_rst_in => edge_rst,
-            signal_in  => step,
-            rise_out   => edge_rise,
-            fall_out   => edge_fall
+            clk_in    => clk,
+            rst_in    => edge_rst,
+            signal_in => step,
+            rise_out  => edge_rise,
+            fall_out  => edge_fall
         );
         
     --! @brief Clock generation process

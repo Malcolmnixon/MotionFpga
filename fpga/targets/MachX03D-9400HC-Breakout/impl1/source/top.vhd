@@ -118,12 +118,12 @@ BEGIN
             clk_div => 4
         )
         PORT MAP (
-            mod_clk_in  => clk,
-            mod_rst_in  => rst,
-            clk_clr_in  => '0',
-            clk_adv_in  => '1',
-            clk_end_out => OPEN,
-            clk_pls_out => pwm_adv
+            clk_in      => clk,
+            rst_in      => rst,
+            div_clr_in  => '0',
+            div_adv_in  => '1',
+            div_end_out => OPEN,
+            div_pls_out => pwm_adv
         );
 
     --! Instantiate SPI slave device bus
@@ -132,8 +132,8 @@ BEGIN
             size => 96
         )
         PORT MAP (
-            mod_clk_in      => clk,
-            mod_rst_in      => rst,
+            clk_in          => clk,
+            rst_in          => rst,
             spi_cs_in       => spi_cs_s,
             spi_sclk_in     => spi_sclk_s,
             spi_mosi_in     => spi_mosi_s,
@@ -149,8 +149,8 @@ BEGIN
             size => 32
         )
         PORT MAP (
-            mod_clk_in      => clk,
-            mod_rst_in      => rst,
+            clk_in          => clk,
+            rst_in          => rst,
             spi_cs_in       => spi_cs_s,
             spi_sclk_in     => spi_sclk_s,
             spi_mosi_in     => '0',
@@ -163,8 +163,8 @@ BEGIN
     --! Instantiate the PWM device
     i_pwm_device : ENTITY work.pwm_device
         PORT MAP (
-            mod_clk_in     => clk,
-            mod_rst_in     => rst,
+            clk_in         => clk,
+            rst_in         => rst,
             dat_wr_done_in => dat_wr_done,
             dat_wr_reg_in  => dat_wr_reg(31 DOWNTO 0),
             dat_rd_reg_out => dat_rd_reg(31 DOWNTO 0),
@@ -175,8 +175,8 @@ BEGIN
     --! Instantiate the PWM device
     i_sdm_device : ENTITY work.sdm_device
         PORT MAP (
-            mod_clk_in     => clk,
-            mod_rst_in     => rst,
+            clk_in         => clk,
+            rst_in         => rst,
             dat_wr_done_in => dat_wr_done,
             dat_wr_reg_in  => dat_wr_reg(63 DOWNTO 32),
             dat_rd_reg_out => dat_rd_reg(63 DOWNTO 32),
@@ -186,8 +186,8 @@ BEGIN
     --! Instantiate the GPIO device
     i_gpio_device : ENTITY work.gpio_device
         PORT MAP (
-            mod_clk_in     => clk,
-            mod_rst_in     => rst,
+            clk_in         => clk,
+            rst_in         => rst,
             dat_wr_done_in => dat_wr_done,
             dat_wr_reg_in  => dat_wr_reg(95 DOWNTO 64),
             dat_rd_reg_out => dat_rd_reg(95 DOWNTO 64),

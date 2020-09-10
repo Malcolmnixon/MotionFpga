@@ -218,8 +218,8 @@ BEGIN
             bit_width => 3
         )
         PORT MAP (
-            mod_clk_in     => clk,
-            mod_rst_in     => rst,
+            clk_in         => clk,
+            rst_in         => rst,
             quad_a_in      => quad_a,
             quad_b_in      => quad_b,
             quad_count_out => quad_count

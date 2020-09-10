@@ -15,11 +15,11 @@ USE ieee.numeric_std.ALL;
 --! @brief Entity to count steps
 ENTITY sim_step_counter IS
     PORT (
-        mod_rst_in : IN    std_logic; --! Module reset
-        step_in    : IN    std_logic; --! Step input
-        dir_in     : IN    std_logic; --! Direction 
-        size_in    : IN    integer;   --! Size of steps
-        steps_out  : OUT   integer    --! Current steps
+        rst_in    : IN    std_logic; --! Asynchronous reset
+        step_in   : IN    std_logic; --! Step input
+        dir_in    : IN    std_logic; --! Direction 
+        size_in   : IN    integer;   --! Size of steps
+        steps_out : OUT   integer    --! Current steps
     );
 END ENTITY sim_step_counter;
 
@@ -32,10 +32,10 @@ ARCHITECTURE sim OF sim_step_counter IS
 BEGIN
 
     --! @brief Process to count steps
-    pr_count : PROCESS (mod_rst_in, step_in) IS
+    pr_count : PROCESS (rst_in, step_in) IS
     BEGIN
         
-        IF (mod_rst_in = '1') THEN
+        IF (rst_in = '1') THEN
             -- Reset state
             steps <= 0;
         ELSIF (rising_edge(step_in)) THEN

@@ -12,8 +12,8 @@ USE ieee.std_logic_1164.ALL;
 --! @brief DRV8711 spi entity
 ENTITY drv8711_spi IS
     PORT (
-        mod_clk_in    : IN    std_logic;                     --! Module Clock
-        mod_rst_in    : IN    std_logic;                     --! Module Reset (async)
+        clk_in        : IN    std_logic;                     --! Clock
+        rst_in        : IN    std_logic;                     --! Asynchronous reset
         data_send_in  : IN    std_logic_vector(15 DOWNTO 0); --! Data to send
         data_recv_out : OUT   std_logic_vector(15 DOWNTO 0); --! Data received
         xfer_adv_in   : IN    std_logic;                     --! Transfer advance flag
@@ -45,17 +45,17 @@ ARCHITECTURE rtl OF drv8711_spi IS
     
 BEGIN
 
-    pr_transfer : PROCESS (mod_rst_in, mod_clk_in) IS
+    pr_transfer : PROCESS (clk_in, rst_in) IS
     BEGIN
     
-        IF (mod_rst_in = '1') THEN
+        IF (rst_in = '1') THEN
             xfer_state <= xfer_idle;
             xfer_start <= '0';
             data_send  <= (OTHERS => '0');
             data_recv  <= (OTHERS => '0');
             spi_count  <= 0;
             spi_sclk   <= '0';
-        ELSIF (rising_edge(mod_clk_in)) THEN
+        ELSIF (rising_edge(clk_in)) THEN
             -- Latch the transfer start
             xfer_start <= xfer_start OR xfer_start_in;
             

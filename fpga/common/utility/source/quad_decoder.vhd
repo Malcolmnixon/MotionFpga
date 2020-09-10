@@ -18,8 +18,8 @@ ENTITY quad_decoder IS
         bit_width : natural := 8 --! Width of the quadrature decoder
     );
     PORT (
-        mod_clk_in     : IN    std_logic;                       --! Clock
-        mod_rst_in     : IN    std_logic;                       --! Reset
+        clk_in         : IN    std_logic;                       --! Clock
+        rst_in         : IN    std_logic;                       --! Asynchronous reset
         quad_a_in      : IN    std_logic;                       --! Quadrature a input
         quad_b_in      : IN    std_logic;                       --! Quadrature b input
         quad_count_out : OUT   unsigned(bit_width - 1 DOWNTO 0) --! Quadrature count output
@@ -39,19 +39,19 @@ ARCHITECTURE rtl OF quad_decoder IS
 BEGIN
 
     --! @brief Process to perform quadrature counting
-    pr_count : PROCESS (mod_rst_in, mod_clk_in) IS
+    pr_count : PROCESS (clk_in, rst_in) IS
     
         VARIABLE v_count_en  : std_logic; --! Flag to perform count
         VARIABLE v_count_dir : std_logic; --! Flag for count direction
         
     BEGIN
     
-        IF (mod_rst_in = '1') THEN
+        IF (rst_in = '1') THEN
             -- Reset counter
             quad_a_old <= '0';
             quad_b_old <= '0';
             quad_count <= (OTHERS => '0');
-        ELSIF (rising_edge(mod_clk_in)) THEN
+        ELSIF (rising_edge(clk_in)) THEN
             -- Evaluate whether to count and in which direction
             v_count_en  := quad_a_in XOR quad_a_old XOR quad_b_in XOR quad_b_old;
             v_count_dir := quad_a_in XOR quad_b_old;

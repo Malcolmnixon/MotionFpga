@@ -15,8 +15,8 @@ USE ieee.numeric_std.ALL;
 --! @brief Entity to measure on-percentage of signal
 ENTITY sim_on_percent IS
     PORT (
-        mod_clk_in  : IN    std_logic; --! Module clock
-        mod_rst_in  : IN    std_logic; --! Module reset
+        clk_in      : IN    std_logic; --! Clock
+        rst_in      : IN    std_logic; --! Asynchronous reset
         signal_in   : IN    std_logic; --! Signal input
         percent_out : OUT   integer    --! On percentage output
     );
@@ -33,15 +33,15 @@ BEGIN
     --! @brief Counting process
     --!
     --! This process counts the clocks and signal on-time to get the percentage
-    pr_count : PROCESS (mod_clk_in, mod_rst_in) IS
+    pr_count : PROCESS (clk_in, rst_in) IS
     BEGIN
     
-        IF (mod_rst_in = '1') THEN
+        IF (rst_in = '1') THEN
             -- Reset counts
             count       <= 0;
             count_on    <= 0;
             percent_out <= 0;
-        ELSIF (rising_edge(mod_clk_in)) THEN
+        ELSIF (rising_edge(clk_in)) THEN
             -- Update counts
             count <= count + 1;
             IF (signal_in = '1') THEN

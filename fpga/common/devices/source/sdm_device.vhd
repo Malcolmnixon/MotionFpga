@@ -19,8 +19,8 @@ USE ieee.numeric_std.ALL;
 --! four 8-bit levels.
 ENTITY sdm_device IS
     PORT (
-        mod_clk_in     : IN    std_logic;                     --! Module Clock
-        mod_rst_in     : IN    std_logic;                     --! Module Reset (async)
+        clk_in         : IN    std_logic;                     --! Clock
+        rst_in         : IN    std_logic;                     --! Asynchronous reset
         dat_wr_done_in : IN    std_logic;                     --! Device Write Done flag
         dat_wr_reg_in  : IN    std_logic_vector(31 DOWNTO 0); --! Device Write Register value
         dat_rd_reg_out : OUT   std_logic_vector(31 DOWNTO 0); --! Device Read Register value
@@ -48,8 +48,8 @@ BEGIN
                 bit_width => 8
             )
             PORT MAP (
-                mod_clk_in   => mod_clk_in,
-                mod_rst_in   => mod_rst_in,
+                clk_in       => clk_in,
+                rst_in       => rst_in,
                 sdm_level_in => sdm_level(i),
                 sdm_out      => sdm_out(i)
             );
@@ -57,30 +57,32 @@ BEGIN
     END GENERATE g_sdm;
 
     --! @brief Process to handle writes and resets
-    pr_write : PROCESS (mod_clk_in, mod_rst_in) IS
+    pr_write : PROCESS (clk_in, rst_in) IS
     BEGIN
         
-        IF (mod_rst_in = '1') THEN
+        IF (rst_in = '1') THEN
             -- Reset levels
             sdm_level(3) <= (OTHERS => '0');
             sdm_level(2) <= (OTHERS => '0');
             sdm_level(1) <= (OTHERS => '0');
             sdm_level(0) <= (OTHERS => '0');
-        ELSIF (rising_edge(mod_clk_in) AND dat_wr_done_in = '1') THEN
-            -- Set levels from write register
-            sdm_level(3) <= dat_wr_reg_in(31 DOWNTO 24);
-            sdm_level(2) <= dat_wr_reg_in(23 DOWNTO 16);
-            sdm_level(1) <= dat_wr_reg_in(15 DOWNTO 8);
-            sdm_level(0) <= dat_wr_reg_in(7 DOWNTO 0);
+        ELSIF (rising_edge(clk_in)) THEN
+            IF (dat_wr_done_in = '1') THEN
+                -- Set levels from write register
+                sdm_level(3) <= dat_wr_reg_in(31 DOWNTO 24);
+                sdm_level(2) <= dat_wr_reg_in(23 DOWNTO 16);
+                sdm_level(1) <= dat_wr_reg_in(15 DOWNTO 8);
+                sdm_level(0) <= dat_wr_reg_in(7 DOWNTO 0);
+            END IF;
         END IF;
         
     END PROCESS pr_write;
 
     --! @brief Process to handle reads
-    pr_read : PROCESS (mod_clk_in) IS
+    pr_read : PROCESS (clk_in) IS
     BEGIN
     
-        IF (rising_edge(mod_clk_in)) THEN
+        IF (rising_edge(clk_in)) THEN
             -- Populate read register with levels
             dat_rd_reg_out <= std_logic_vector(sdm_level(3)) &
                               std_logic_vector(sdm_level(2)) &

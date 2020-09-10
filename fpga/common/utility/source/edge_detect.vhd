@@ -15,11 +15,11 @@ USE ieee.std_logic_1164.ALL;
 --! edges.
 ENTITY edge_detect IS
     PORT (
-        mod_clk_in : IN    std_logic; --! Module clock
-        mod_rst_in : IN    std_logic; --! Module reset (async)
-        sig_in     : IN    std_logic; --! Input signal
-        rise_out   : OUT   std_logic; --! Rising edge output
-        fall_out   : OUT   std_logic  --! Falling edge output
+        clk_in   : IN    std_logic; --! Clock
+        rst_in   : IN    std_logic; --! Asynchronous reset
+        sig_in   : IN    std_logic; --! Input signal
+        rise_out : OUT   std_logic; --! Rising edge output
+        fall_out : OUT   std_logic  --! Falling edge output
     );
 END ENTITY edge_detect;
 
@@ -35,16 +35,16 @@ ARCHITECTURE rtl OF edge_detect IS
 BEGIN
 
     --! @brief Edge detection process
-    pr_detect : PROCESS (mod_rst_in, mod_clk_in) IS
+    pr_detect : PROCESS (clk_in, rst_in) IS
     BEGIN
         
-        IF (mod_rst_in = '1') THEN
+        IF (rst_in = '1') THEN
             -- Aynchronous reset
             prev_ok  <= '0';
             prev     <= '0';
             rise_out <= '0';
             fall_out <= '0';
-        ELSIF (rising_edge(mod_clk_in)) THEN
+        ELSIF (rising_edge(clk_in)) THEN
             IF (prev_ok = '1') THEN
                 -- Detect rising edge
                 IF (sig_in = '1' AND prev = '0') THEN

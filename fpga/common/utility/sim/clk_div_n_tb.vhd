@@ -23,10 +23,10 @@ ARCHITECTURE tb OF clk_div_n_tb IS
     TYPE t_stimulus IS RECORD
         name    : string(1 TO 20);          --! Stimulus name
         rst     : std_logic_vector(0 TO 7); --! rst input to uut
-        clk_clr : std_logic_vector(0 TO 7); --! clk_clr input to uut
-        clk_adv : std_logic_vector(0 TO 7); --! clk_adv input to uut
-        clk_end : std_logic_vector(0 TO 7); --! clk_end expected from uut
-        clk_pls : std_logic_vector(0 TO 7); --! clk_pls expected from uut
+        div_clr : std_logic_vector(0 TO 7); --! div_clr input to uut
+        div_adv : std_logic_vector(0 TO 7); --! div_adv input to uut
+        div_end : std_logic_vector(0 TO 7); --! div_end expected from uut
+        div_pls : std_logic_vector(0 TO 7); --! div_pls expected from uut
     END RECORD t_stimulus;
     
     --! Stimulus array type
@@ -41,68 +41,68 @@ ARCHITECTURE tb OF clk_div_n_tb IS
         ( 
             name    => "Hold in reset       ",
             rst     => "11111111",
-            clk_clr => "00000000",
-            clk_adv => "00000000",
-            clk_end => "00000000",
-            clk_pls => "00000000"
+            div_clr => "00000000",
+            div_adv => "00000000",
+            div_end => "00000000",
+            div_pls => "00000000"
         ),
         ( 
             name    => "Not enabled         ",
             rst     => "00000000",
-            clk_clr => "00000000",
-            clk_adv => "00000000",
-            clk_end => "00000000",
-            clk_pls => "00000000"
+            div_clr => "00000000",
+            div_adv => "00000000",
+            div_end => "00000000",
+            div_pls => "00000000"
         ),
         ( 
             name    => "Clear               ",
             rst     => "00000000",
-            clk_clr => "11111111",
-            clk_adv => "00000000",
-            clk_end => "00000000",
-            clk_pls => "00000000"
+            div_clr => "11111111",
+            div_adv => "00000000",
+            div_end => "00000000",
+            div_pls => "00000000"
         ),
         ( 
             name    => "Normal counting 1   ",
             rst     => "00000000",
-            clk_clr => "00000000",
-            clk_adv => "11111111",
-            clk_end => "00010001",
-            clk_pls => "00010001"
+            div_clr => "00000000",
+            div_adv => "11111111",
+            div_end => "00010001",
+            div_pls => "00010001"
         ),
         ( 
             name    => "Normal counting 2   ",
             rst     => "00000000",
-            clk_clr => "00000000",
-            clk_adv => "11111111",
-            clk_end => "00010001",
-            clk_pls => "00010001"
+            div_clr => "00000000",
+            div_adv => "11111111",
+            div_end => "00010001",
+            div_pls => "00010001"
         ),
         ( 
             name    => "Freezing count      ",
             rst     => "00000000",
-            clk_clr => "00000000",
-            clk_adv => "00001111",
-            clk_end => "11110001",
-            clk_pls => "00000001"
+            div_clr => "00000000",
+            div_adv => "00001111",
+            div_end => "11110001",
+            div_pls => "00000001"
         ),
         (
             name    => "Count and clear     ",
             rst     => "00000000",
-            clk_clr => "00110000",
-            clk_adv => "11111111",
-            clk_end => "00000001",
-            clk_pls => "00000001"
+            div_clr => "00110000",
+            div_adv => "11111111",
+            div_end => "00000001",
+            div_pls => "00000001"
         )
     );
     
     -- Signals to clk_div_n uut
     SIGNAL clk     : std_logic; --! Clock
     SIGNAL rst     : std_logic; --! Reset
-    SIGNAL clk_clr : std_logic; --! Count clear to uut
-    SIGNAL clk_adv : std_logic; --! Count advance to uut
-    SIGNAL clk_end : std_logic; --! Count end from uut
-    SIGNAL clk_pls : std_logic; --! Count pulse from uut
+    SIGNAL div_clr : std_logic; --! Divider clear to uut
+    SIGNAL div_adv : std_logic; --! Divider advance to uut
+    SIGNAL div_end : std_logic; --! Divider end from uut
+    SIGNAL div_pls : std_logic; --! Divider pulse from uut
     
 BEGIN
 
@@ -112,12 +112,12 @@ BEGIN
             clk_div => 4
         )
         PORT MAP (
-            mod_clk_in  => clk,
-            mod_rst_in  => rst,
-            clk_clr_in  => clk_clr,
-            clk_adv_in  => clk_adv,
-            clk_end_out => clk_end,
-            clk_pls_out => clk_pls
+            clk_in      => clk,
+            rst_in      => rst,
+            div_clr_in  => div_clr,
+            div_adv_in  => div_adv,
+            div_end_out => div_end,
+            div_pls_out => div_pls
         );
 
     --! @brief Clock generation process
@@ -140,7 +140,8 @@ BEGIN
         
         -- Initialize entity inputs
         rst     <= '1';
-        clk_adv <= '0';
+        div_clr <= '0';
+        div_adv <= '0';
         WAIT FOR c_clk_period;
 
         -- Loop over stimulus
@@ -152,23 +153,23 @@ BEGIN
             FOR t IN 0 TO 7 LOOP
                 -- Set inputs then wait for clock to rise
                 rst     <= c_stimulus(s).rst(t);
-                clk_clr <= c_stimulus(s).clk_clr(t);
-                clk_adv <= c_stimulus(s).clk_adv(t);
+                div_clr <= c_stimulus(s).div_clr(t);
+                div_adv <= c_stimulus(s).div_adv(t);
                 WAIT UNTIL clk = '1';
                 
                 -- Wait for clk to fall
                 WAIT UNTIL clk = '0';
                 
                 -- Assert outputs
-                ASSERT clk_end = c_stimulus(s).clk_end(t)
+                ASSERT div_end = c_stimulus(s).div_end(t)
                     REPORT "At time " & integer'image(t) 
-                    & " expected clk_end = " & std_logic'image(c_stimulus(s).clk_end(t)) 
-                    & " but got " & std_logic'image(clk_end)
+                    & " expected div_end = " & std_logic'image(c_stimulus(s).div_end(t)) 
+                    & " but got " & std_logic'image(div_end)
                     SEVERITY error;
-                ASSERT clk_pls = c_stimulus(s).clk_pls(t)
+                ASSERT div_pls = c_stimulus(s).div_pls(t)
                     REPORT "At time " & integer'image(t) 
-                    & " expected clk_pls = " & std_logic'image(c_stimulus(s).clk_pls(t)) 
-                    & " but got " & std_logic'image(clk_pls)
+                    & " expected div_pls = " & std_logic'image(c_stimulus(s).div_pls(t)) 
+                    & " but got " & std_logic'image(div_pls)
                     SEVERITY error;
             END LOOP;
         END LOOP;

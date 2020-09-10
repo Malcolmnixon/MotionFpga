@@ -87,8 +87,8 @@ BEGIN
     --! Instantiate DRV8711 SPI as uut
     i_uut : ENTITY work.drv8711_spi
         PORT MAP (
-            mod_clk_in    => clk,
-            mod_rst_in    => rst,
+            clk_in        => clk,
+            rst_in        => rst,
             data_send_in  => data_send,
             data_recv_out => data_recv,
             xfer_adv_in   => xfer_adv,
@@ -106,12 +106,12 @@ BEGIN
             clk_div => 14
         )
         PORT MAP (
-            mod_clk_in  => clk,
-            mod_rst_in  => xfer_clk_rst,
-            clk_clr_in  => '0',
-            clk_adv_in  => '1',
-            clk_end_out => OPEN,
-            clk_pls_out => xfer_adv
+            clk_in      => clk,
+            rst_in      => xfer_clk_rst,
+            div_clr_in  => '0',
+            div_adv_in  => '1',
+            div_end_out => OPEN,
+            div_pls_out => xfer_adv
         );
 
     --! @brief Clock generator process

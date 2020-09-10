@@ -17,7 +17,7 @@ ENTITY sim_spi_master IS
         spi_sclk_period : time    := 400 ns  --! SPI clock period
     );
     PORT (
-        mod_rst_in    : IN    std_logic;                                --! Reset
+        rst_in        : IN    std_logic;                                --! Asynchronous reset
         spi_cs_out    : OUT   std_logic;                                --! SPI chip-select line
         spi_sclk_out  : OUT   std_logic;                                --! SPI sclk line
         spi_mosi_out  : OUT   std_logic;                                --! SPI mosi line
@@ -43,7 +43,7 @@ BEGIN
 
     BEGIN
 
-        IF (mod_rst_in = '1') THEN
+        IF (rst_in = '1') THEN
             -- Reset
             spi_cs_out    <= '1';
             spi_sclk_out  <= '0';
@@ -52,7 +52,7 @@ BEGIN
             xfer_done_out <= '0';
 
             -- Wait for reset to clear
-            WAIT UNTIL mod_rst_in = '0';
+            WAIT UNTIL rst_in = '0';
         ELSIF (xfer_start_in = '1') THEN
             -- Drop chip-select
             WAIT FOR spi_cs_delay;
@@ -86,7 +86,7 @@ BEGIN
             xfer_done_out <= '0';
         ELSE
             -- Wait for work
-            WAIT ON mod_rst_in, xfer_start_in;
+            WAIT ON rst_in, xfer_start_in;
         END IF;
 
     END PROCESS pr_xfer;

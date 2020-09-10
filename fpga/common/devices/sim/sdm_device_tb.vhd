@@ -118,8 +118,8 @@ BEGIN
     --! Instantiate SDM device as uut
     i_uut : ENTITY work.sdm_device(rtl)
         PORT MAP (
-            mod_clk_in     => clk,
-            mod_rst_in     => rst,
+            clk_in         => clk,
+            rst_in         => rst,
             dat_wr_done_in => dat_wr_done,
             dat_wr_reg_in  => dat_wr_reg,
             dat_rd_reg_out => dat_rd_reg,
@@ -132,8 +132,8 @@ BEGIN
         --! Instantiate on_percent
         i_on_percent : ENTITY work.sim_on_percent(sim)
             PORT MAP (
-                mod_clk_in  => clk,
-                mod_rst_in  => on_rst,
+                clk_in      => clk,
+                rst_in      => on_rst,
                 signal_in   => sdm_out(i),
                 percent_out => on_percent(i)
             );

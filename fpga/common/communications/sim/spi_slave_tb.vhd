@@ -20,8 +20,8 @@ ARCHITECTURE tb OF spi_slave_tb IS
     CONSTANT c_clk_period : time := 100 ns;
     
     -- Signals to unit under test
-    SIGNAL mod_clk     : std_logic;                     --! Module clock input to uut
-    SIGNAL mod_rst     : std_logic;                     --! Module reset input to uut
+    SIGNAL clk         : std_logic;                     --! Clock
+    SIGNAL rst         : std_logic;                     --! Asynchronous reset
     SIGNAL spi_cs      : std_logic;                     --! SPI chip select input to uut
     SIGNAL spi_sclk    : std_logic;                     --! SPI clock input to uut
     SIGNAL spi_mosi    : std_logic;                     --! SPI MOSI input to uut
@@ -42,8 +42,8 @@ BEGIN
             size => 32
         )
         PORT MAP (
-            mod_clk_in      => mod_clk,
-            mod_rst_in      => mod_rst,
+            clk_in          => clk,
+            rst_in          => rst,
             spi_cs_in       => spi_cs,
             spi_sclk_in     => spi_sclk,
             spi_mosi_in     => spi_mosi,
@@ -58,11 +58,11 @@ BEGIN
     BEGIN
     
         -- Low for 1/2 clock
-        mod_clk <= '0';
+        clk <= '0';
         WAIT FOR c_clk_period / 2;
         
         -- High for 1/2 clock
-        mod_clk <= '1';
+        clk <= '1';
         WAIT FOR c_clk_period / 2;
         
     END PROCESS pr_clock;
@@ -78,14 +78,14 @@ BEGIN
         
         -- Reset for 5 clocks
         REPORT "Hold in Reset" SEVERITY note;
-        mod_rst <= '1';
+        rst <= '1';
         WAIT FOR c_clk_period * 5;
         ASSERT (spi_miso    = '0') REPORT "Expected spi_miso low while in reset" SEVERITY error;
         ASSERT (dat_wr_done = '0') REPORT "Expected dat_wr_done low while in reset" SEVERITY error;
         
         -- Release reset for 5 clocks
         REPORT "Take out of Reset" SEVERITY note;
-        mod_rst <= '0';
+        rst <= '0';
         WAIT FOR c_clk_period * 5;
         ASSERT (spi_miso    = '0') REPORT "Expected spi_miso low while idle" SEVERITY error;
         ASSERT (dat_wr_done = '0') REPORT "Expected dat_wr_done low while idle" SEVERITY error;

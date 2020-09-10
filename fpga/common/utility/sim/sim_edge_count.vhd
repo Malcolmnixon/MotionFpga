@@ -15,11 +15,11 @@ USE ieee.numeric_std.ALL;
 --! @brief Entity to count edges
 ENTITY sim_edge_count IS
     PORT (
-        mod_clk_in : IN    std_logic; --! Module clock
-        mod_rst_in : IN    std_logic; --! Module reset
-        signal_in  : IN    std_logic; --! Signal input
-        rise_out   : OUT   integer;   --! Count of rising edges
-        fall_out   : OUT   integer    --! Count of falling edges
+        clk_in    : IN    std_logic; --! Clock
+        rst_in    : IN    std_logic; --! Asynchronous reset
+        signal_in : IN    std_logic; --! Signal input
+        rise_out  : OUT   integer;   --! Count of rising edges
+        fall_out  : OUT   integer    --! Count of falling edges
     );
 END ENTITY sim_edge_count;
 
@@ -36,16 +36,16 @@ BEGIN
     --! @brief Counting process
     --!
     --! This process counts the rising and falling edges
-    pr_count : PROCESS (mod_clk_in, mod_rst_in) IS
+    pr_count : PROCESS (clk_in, rst_in) IS
     BEGIN
     
-        IF (mod_rst_in = '1') THEN
+        IF (rst_in = '1') THEN
             -- Reset counts
             prev_signal <= '0';
             prev_ok     <= '0';
             rise        <= 0;
             fall        <= 0;
-        ELSIF (rising_edge(mod_clk_in)) THEN
+        ELSIF (rising_edge(clk_in)) THEN
             -- Detect edges
             IF (prev_ok = '1') THEN
                 -- Count rising edges

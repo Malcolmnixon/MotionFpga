@@ -84,8 +84,8 @@ BEGIN
     --! Instantiate GPIO device as uut
     i_uut : ENTITY work.gpio_device(rtl)
         PORT MAP (
-            mod_clk_in     => clk,
-            mod_rst_in     => rst,
+            clk_in         => clk,
+            rst_in         => rst,
             dat_wr_done_in => dat_wr_done,
             dat_wr_reg_in  => dat_wr_reg,
             dat_rd_reg_out => dat_rd_reg,
