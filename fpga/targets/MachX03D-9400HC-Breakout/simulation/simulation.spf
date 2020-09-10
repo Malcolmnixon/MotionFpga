@@ -24,6 +24,11 @@
     <Source worklib="work" path="../../common/devices/sim/sdm_device_tb.vhd" type="VHDL" include="none"/>
     <Source worklib="work" path="../../common/devices/source/gpio_device.vhd" type="VHDL" include="none"/>
     <Source worklib="work" path="../../common/devices/sim/gpio_device_tb.vhd" type="VHDL" include="none"/>
+    <Source worklib="work" path="../../common/devices/sim/sim_step_counter.vhd" type="VHDL" include="none"/>
+    <Source worklib="work" path="../../common/devices/sim/sim_drv8711_spi.vhd" type="VHDL" include="none"/>
+    <Source worklib="work" path="../../common/devices/sim/sim_drv8711.vhd" type="VHDL" include="none"/>
+    <Source worklib="work" path="../../common/devices/source/drv8711_spi.vhd" type="VHDL" include="none"/>
+    <Source worklib="work" path="../../common/devices/sim/drv8711_spi_tb.vhd" type="VHDL" include="none"/>
     <Source worklib="work" path="../../common/communications/source/spi_slave.vhd" type="VHDL" include="none"/>
     <Source worklib="work" path="../../common/communications/sim/spi_slave_tb.vhd" type="VHDL" include="none"/>
     <Source worklib="work" path="../../common/communications/sim/sim_spi_master.vhd" type="VHDL" include="none"/>
@@ -33,5 +38,5 @@
     <SimLib value="pmi_work ovi_machxo3d"/>
     <GlbInc value=""/>
     <Macro value=""/>
-    <TopModule instance="" language="VHDL" name="top_tb"/>
+    <TopModule instance="" language="VHDL" name="blink"/>
 </BaliSimProject>
